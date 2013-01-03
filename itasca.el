@@ -1,4 +1,4 @@
-(setq kw-up "def loop command if case_of section")
+(setq kw-up "def define loop command if case_of section")
 
 (setq kw-down "end end_loop end_command end_if end_case
 end_section")
@@ -6,8 +6,6 @@ end_section")
 (setq kw-down-up "case else")
 
 (setq kw-fish "array local global argument while null then")
-
-(setq kw (mapcan #'split-string (list kw-up kw-down kw-down-up kw-fish)))
 
 ; general functions
 
@@ -28,14 +26,90 @@ inbox index index_type input int lose_array msgbox normfromdip
 normfromdipdd notify null out pointer_type principal_stress
 realtime sleep string strlen substr tolower toupper type")
 
-(setq functions
-      (regexp-opt (mapcan #'split-string (list vector-functions string-functions general-functions)) 'words))
+(setq io-functions "write read close open sopen swrite sclose xmlparse")
 
+
+(setq pfc-fish-functions
+"ball_head wall_head contact_head circ_head max_bid max_wid max_cid
+cycle step ccount gravx gravy gravz grav time tdel given_tdel
+safety_fac local_damp maddr e_kinetic e_friction e_strain e_bond
+e_body e_bound pre_cycle av_unbal max_unbal clump_head max_clid
+find_ball find_wall find_meas ball_near2 ball_near3 par_part av_cforce
+max_cforce inrange th_dtmax th_flag th_mflag th_safefac th_tdel
+th_time th_applydeltemp
+
+multi_installBrick multi_totBrick multi_totProc multi_thisProc
+multi_rootProc multi_numProc multi_BrickData multi_BrickType
+multi_FBrickData multi_putCodeInExtra multi_numNd multi_nd_vfix
+multi_nd_vfob multi_nd_vpos multi_nd_vvel multi_type find_clump
+clump_near2 clump_near3 per_flag per_extent per_srate
+
+cell_xnum cell_ynum cell_znum cell_size cell_xlow cell_ylow cell_zlow
+cylinder_intersect overlap f_tdel
+
+b_next b_clist b_ctype b_xfix b_yfix b_zfix b_vfix b_rxfix b_ryfix
+b_rzfix b_rfix b_id b_x b_y b_z b_vpos b_ux b_uy b_uz b_vu b_xvel
+b_yvel b_zvel b_vvel b_rxvel b_ryvel b_rzvel b_rvel b_xfob b_yfob
+b_zfob b_vfob b_xfap b_yfap b_zfap b_vfap b_xmom b_ymom b_zmom b_mom
+b_rad b_mass b_realmass b_moi b_dens b_kn b_ks b_shearmod b_poiss
+b_fric b_ex del_ball b_color b_xmap b_ymap b_zmap b_map b_shared
+b_type b_rot b_damp b_realmoi b_clump b_cllist b_extra b_stress
+b_vrvel b_vmom b_vmap b_vrfix b_xdisp b_ydisp b_zdisp b_vdisp b_delete
+
+b_thexp b_thfix b_thpob b_thpsrc b_thsheat b_thtemp b_thdeltemp
+b_perflag b_perBall b_xffap b_yffap b_zffap b_vffap b_multi_type
+b_realmassset b_realmoiset
+
+
+c_next c_ball1 c_ball2 c_b1clist c_b2clist c_gobj1 c_gobj2 c_go1clist
+c_go2clist c_wseg c_type c_bflag c_broken c_x c_y c_z c_vpos c_nforce
+c_xsforce c_ysforce c_zsforce c_sforce c_kn c_ks c_hn c_hs c_fric
+c_nstrength c_sstrength c_ex c_pb c_xun c_yun c_zun c_vun c_jset
+c_slipwork c_inhibit c_prop c_model c_extra c_vsforce c_dampn c_damps
+c_thactive c_thlen c_thpipe c_thpow c_thres c_active c_installpb
+c_ondisk c_ondisk c_nvforce c_xsvforce c_ysvforce c_zsvforce c_svforce
+c_vsvforce c_knset c_ksset c_fricset c_dampnt c_ontri c_mom c_tmom
+c_vbmom
+
+measure m_coord m_poros m_sfrac m_s11 m_s12 m_s21 m_s22 m_s13 m_s31
+m_s23 m_s32 m_s33 m_ed11 m_ed12 m_ed21 m_ed22 m_ed13 m_ed31 m_ed23
+m_ed32 m_ed33 m_x m_y m_z m_vpos m_rad m_id m_next m_tc11 m_tc12
+m_tc21 m_tc22 m_tc13 m_tc31 m_tc23 m_tc32 m_tc33
+
+
+pb_rad pb_kn pb_ks pb_nstrength pb_sstrength pb_nstress pb_sstress
+pb_nforce pb_xsforce pb_ysforce pb_zsforce pb_sforce pb_tmom pb_xbmom
+pb_ybmom pb_zbmom pb_mom pb_vsforce pb_vmom pb_mfac pb_coh pb_fa
+
+cl_add cl_extra cl_id cl_list cl_next cl_rel cl_scale cl_color cl_damp
+cl_mass cl_realmass cl_moi cl_vmoi cl_vol cl_volgiven cl_vfix cl_xfix
+cl_yfix cl_zfix cl_rfix cl_vrfix cl_rxfix cl_ryfix cl_rzfix cl_vfap
+cl_xfap cl_yfap cl_zfap cl_map cl_vmap cl_xmap cl_ymap cl_zmap cl_vpos
+cl_x cl_y cl_z cl_vvel cl_xvel cl_yvel cl_zvel cl_rvel cl_vrvel
+cl_rxvel cl_ryvel cl_rzvel cl_vfob cl_xfob cl_yfob cl_zfob cl_mom
+cl_vmom cl_xmom cl_ymom cl_zmom cl_stress cl_vdisp cl_xdisp cl_ydisp
+cl_zdisp
+
+ws_next ws_prev ws_x ws_y ws_xvel ws_yvel ws_xun ws_yun ws_length
+ws_ux ws_uy
+
+wf_next wf_id wf_xun wf_yun wf_zun wf_vnum wf_vpos
+
+w_next w_clist w_id w_x w_y w_z w_pos w_ux w_uy w_uz w_vu w_xvel
+w_yvel w_zvel w_vvel w_xfob w_yfob w_zfob w_vfob w_kn w_ks w_fric w_ex
+del_wall w_color w_flist w_wlist w_extra w_fix w_delete w_rxvel
+w_ryvel w_rzvel w_rvel w_vrvel w_xmom w_ymom w_zmom w_mom w_vmom
+w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
+
+(setq functions
+      (regexp-opt (mapcan #'split-string (list vector-functions string-functions general-functions io-functions pfc-fish-functions )) 'words))
+
+(setq kw (mapcan #'split-string (list kw-up kw-down kw-down-up kw-fish)))
 
 (require 'generic-x) ;; we need this
 (define-generic-mode
     'itasca-fish-mode
-  '(";")
+q  '(";")
   kw
   ;(list (regexp-opt kw 'word))
   (list (cons functions font-lock-function-name-face)
