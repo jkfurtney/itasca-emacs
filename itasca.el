@@ -1,7 +1,22 @@
-;; set the mode
-;; // -*- mode: itasca-general -*-
-;; // -*- mode: itasca-flac -*-
-;; // -*- mode: itasca-pfc -*-
+;; Emacs modes for editing Itasca software data files.
+;; ---------------------------------------------------
+;; FLAC FLAC3D UDEC 3DEC PFC www.itascacg.com/software
+;;
+;; Installation: put this code into your .emacs file
+;;
+;; to set the mode on a per-file basis
+;; -*- mode: itasca-general -*-
+;; -*- mode: itasca-flac -*-
+;; -*- mode: itasca-pfc -*-
+;;
+;; to do:
+;; general table functions are missing
+;; FLAC3D mode
+;; functions to automatically format and indent FISH code
+;; redo  FLAC mode
+;; case insensitivity for highlighting
+;; optional _ in some keywords
+
 
 (setq kw-up "def define loop command if case_of section")
 
@@ -41,7 +56,7 @@ realtime sleep string strlen substr tolower toupper type")
 (define-generic-mode  'itasca-general-mode
   '(";")
   kw
-  (list (cons general-functions 'font-lock-function-name-face)
+  (list (cons general-functions 'font-lock-type-face)
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.dat$" "\\.fis$")
@@ -81,7 +96,6 @@ b_thexp b_thfix b_thpob b_thpsrc b_thsheat b_thtemp b_thdeltemp
 b_perflag b_perBall b_xffap b_yffap b_zffap b_vffap b_multi_type
 b_realmassset b_realmoiset
 
-
 c_next c_ball1 c_ball2 c_b1clist c_b2clist c_gobj1 c_gobj2 c_go1clist
 c_go2clist c_wseg c_type c_bflag c_broken c_x c_y c_z c_vpos c_nforce
 c_xsforce c_ysforce c_zsforce c_sforce c_kn c_ks c_hn c_hs c_fric
@@ -96,7 +110,6 @@ measure m_coord m_poros m_sfrac m_s11 m_s12 m_s21 m_s22 m_s13 m_s31
 m_s23 m_s32 m_s33 m_ed11 m_ed12 m_ed21 m_ed22 m_ed13 m_ed31 m_ed23
 m_ed32 m_ed33 m_x m_y m_z m_vpos m_rad m_id m_next m_tc11 m_tc12
 m_tc21 m_tc22 m_tc13 m_tc31 m_tc23 m_tc32 m_tc33
-
 
 pb_rad pb_kn pb_ks pb_nstrength pb_sstrength pb_nstress pb_sstress
 pb_nforce pb_xsforce pb_ysforce pb_zsforce pb_sforce pb_tmom pb_xbmom
@@ -129,7 +142,7 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
 (define-generic-mode  'itasca-pfc-mode
   '(";")
   kw
-  (list (cons pfc-functions 'font-lock-function-name-face)
+  (list (cons pfc-functions 'font-lock-type-face)
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.p3dat$")
@@ -143,7 +156,7 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
 (define-generic-mode  'itasca-flac-mode
   '(";")
   kw
-  (list (cons "="  'font-lock-operator)
+  (list
     (cons flac-fish-functions  'font-lock-type-face)
     (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
           'font-lock-variable-name-face))
