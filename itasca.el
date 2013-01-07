@@ -125,7 +125,14 @@ di_pos1 di_pos2")
 ;; pfc 4.0 specific
 
 (setq pfc-fish-functions
-"ball_head wall_head contact_head circ_head max_bid max_wid max_cid
+"ccfd_nele ccfd_nnode ccfd_elenode ccfd_xnode ccfd_ynode
+ccfd_znode ccfd_por ccfd_xvel ccfd_yvel ccfd_zvel ccfd_xdrag
+ccfd_ydrag ccfd_zdrag ccfd_t_s ccfd_fite ccfd_xgradp ccfd_ygradp
+ccfd_zgradp ccfd_elevol ccfd_xelecent ccfd_yelecent ccfd_zelecent
+ccfd_xyzele ccfd_ballele ccfd_fint ccfd_xballff ccfd_yballff
+ccfd_zballff ccfd_elemu ccfd_elerho ccfd_elepress
+
+ball_head wall_head contact_head circ_head max_bid max_wid max_cid
 cycle step ccount gravx gravy gravz grav time tdel given_tdel
 safety_fac local_damp maddr e_kinetic e_friction e_strain e_bond
 e_body e_bound pre_cycle av_unbal max_unbal clump_head max_clid
