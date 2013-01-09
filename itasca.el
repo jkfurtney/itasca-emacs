@@ -13,28 +13,27 @@
 ;; functions to automatically format and indent FISH code
 ;; redo FLAC mode
 ;; case insensitivity for highlighting
-;; optional _ in some keywords
 
 
-(setq kw-up "def define loop command if case_of section")
+(defconst kw-up "def define loop command if case_of caseof section")
 
-(setq kw-down "end end_loop end_command end_if end_case
-end_section")
+(defconst kw-down "end end_loop endloop end_command endcommand end_if
+endif end_case endcase end_section endsection")
 
-(setq kw-down-up "case else")
+(defconst kw-down-up "case else")
 
-(setq kw-fish "array local global argument while null then")
+(defconst kw-fish "array local global argument while null then")
 
-(setq vector-functions "vector xcomp ycomp zcomp cross dot unit")
+(defconst vector-functions "vector xcomp ycomp zcomp cross dot unit")
 
-(setq string-functions "buildstr char float input int output parse
+(defconst string-functions "buildstr char float input int output parse
 pre_parse string strlen substr")
 
-(setq math-functions "abs acos and asin atan atan2 cos degrad exp
+(defconst math-functions "abs acos and asin atan atan2 cos degrad exp
 grand ln log lshift mag mag2 max min not or pi round rshift sgn
 sin sqrt tan urand")
 
-(setq general-functions "array_dim array_size buildstr char clock
+(defconst general-functions "array_dim array_size buildstr char clock
 code_majorversion code_minorversion code_name ddfromnorm
 dipfromnorm environment error fc_arg find_range fish_majorversion
 fish_minorversion float from_principal get_array in in_range
@@ -42,16 +41,17 @@ inbox index index_type input int lose_array msgbox normfromdip
 normfromdipdd notify null out pointer_type principal_stress
 realtime sleep string strlen substr tolower toupper type")
 
-(setq io-functions "write read close open sopen swrite sclose
+(defconst io-functions "write read close open sopen swrite sclose
 xmlparse get_socket lose_socket")
 
-(setq table-functions "del_table get_table table table_id
+(defconst table-functions "del_table get_table table table_id
 table_name table_size vtable xtable ytable")
 
-(setq mem-functions "get_mem lose_mem mem")
+(defconst mem-functions "get_mem lose_mem mem")
+
 
 ;; new in FLAC3D 5.0
-(setq uds-functions "uds_list uds_head uds_next uds_find uds_near
+(defconst uds-functions "uds_list uds_head uds_next uds_find uds_near
 uds_create uds_id uds_group uds_isgroup uds_removegroup uds_extra
 uds_pos uds_remove uds_value udv_list udv_head udv_next udv_find
 udv_near udv_create udv_id udv_group udv_isgroup udv_removegroup
@@ -60,15 +60,15 @@ udv_remove udt_list udt_head udt_next udt_find udt_near
 udt_create udt_id udt_group udt_isgroup udt_removegroup udt_extra
 udt_pos udt_value udt_prin udt_setdir udt_remove")
 
-(setq label-functions "label_arrow label_create label_delete
+(defconst label-functions "label_arrow label_create label_delete
 label_end label_find label_head label_next label_pos label_text")
 
-(setq mail-functions "mail_addattachment mail_addrecipient
+(defconst mail-functions "mail_addattachment mail_addrecipient
 mail_clear mail_deleterecipient mail_deleteattachment mail_send
 mail_setaccount mail_setbody mail_setdomain mail_sethost
 mail_setpassword mail_setsubject")
 
-(setq gset-functions "gset_find gset_create gset_list gset_remove
+(defconst gset-functions "gset_find gset_create gset_list gset_remove
 gset_id gset_name gn_find gn_near gn_create gn_list gn_remove
 gn_id gn_group yes gn_isgroup gn_groupnum gn_groupex gn_extra yes
 gn_startedge gn_startindex gn_pos yes ge_find ge_near ge_create
@@ -80,35 +80,45 @@ gpol_check gpol_list gpol_remove gpol_id gpol_group yes
 gpol_isgroup gpol_extra yes gpol_size gpol_edge gpol_node
 gpol_normal gpol_nextpoly gpol_nextindex gpol_cen gpol_area")
 
-(setq dfn-functions "dfn_list dfn_find dfn_typeid dfn_typename
+(defconst dfn-functions "dfn_list dfn_find dfn_typeid dfn_typename
 dfn_p10 dfn_p10geom dfn_p20 dfn_p21 dfn_avetrace dfn_number
 dfn_delete dfn_add dfn_id dfn_flist dfn_ilist dfn_finbox
 dfn_carray dfn_dcenter dfn_density dfn_percolation")
 
-(setq dfrac-functions "dfrac_find dfrac_near dfrac_typeid
+(defconst dfrac-functions "dfrac_find dfrac_near dfrac_typeid
 dfrac_typename dfrac_remove dfrac_disk dfrac_prop dfrac_carray
 dfrac_iarray dfrac_varray dfrac_radius dfrac_pos dfrac_dip
 dfrac_dipd dfrac_normal dfrac_area dfrac_extra dfrac_group
 dfrac_number dfrac_id dfrac_pnear dfrac_dfn dfrac_isgroup
 dfrac_removegroup")
 
-(setq dvert-functions "dvert_find dvert_typeid dvert_typename
+(defconst dvert-functions "dvert_find dvert_typeid dvert_typename
 dvert_id dvert_pos")
 
-(setq di-functions "di_find di_typeid di_typename di_end1 di_end2
+(defconst di-functions "di_find di_typeid di_typename di_end1 di_end2
 di_pos1 di_pos2")
 
-(setq dtp-functions "dtp_list dtp_find dtp_get dtp_id dtp_name
+(defconst dtp-functions "dtp_list dtp_find dtp_get dtp_id dtp_name
   dtp_stype dtp_snbp dtp_sparam dtp_smin dtp_smax dtp_otype
   dtp_onbp dtp_oparam dtp_dmin dtp_dmax dtp_ddmin dtp_ddmax
   dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
 
 
+(defun itasca-change-syntax-table ()
+  (modify-syntax-entry ?_ "w")
+  (modify-syntax-entry ?' "\""))
 
-(setq general-functions
-      (regexp-opt (mapcan #'split-string (list vector-functions string-functions general-functions io-functions )) 'words))
+(defconst general-mode-functions
+      (regexp-opt (mapcan #'split-string (list
+                                          vector-functions
+                                          string-functions
+                                          general-functions
+                                          math-functions
+                                          table-functions
+                                          mem-functions
+                                          io-functions )) 'words))
 
-(setq kw (mapcan #'split-string (list kw-up kw-down kw-down-up kw-fish)))
+(defconst kw (mapcan #'split-string (list kw-up kw-down kw-down-up kw-fish)))
 
 (require 'generic-x)
 
@@ -119,12 +129,12 @@ di_pos1 di_pos2")
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.dat$" "\\.fis$")
-  nil
+  (itasca-change-syntax-table)
   "Mode for Itasca data files (not code specific)")
 
 ;; pfc 4.0 specific
 
-(setq pfc-fish-functions
+(defconst pfc-fish-functions
 "ccfd_nele ccfd_nnode ccfd_elenode ccfd_xnode ccfd_ynode
 ccfd_znode ccfd_por ccfd_xvel ccfd_yvel ccfd_zvel ccfd_xdrag
 ccfd_ydrag ccfd_zdrag ccfd_t_s ccfd_fite ccfd_xgradp ccfd_ygradp
@@ -202,7 +212,7 @@ w_ryvel w_rzvel w_rvel w_vrvel w_xmom w_ymom w_zmom w_mom w_vmom
 w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
 
 
-(setq pfc-functions
+(defconst pfc-functions
       (regexp-opt (mapcan #'split-string
                           (list
                            vector-functions
@@ -221,12 +231,12 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.p3dat$")
-  nil
+  (itasca-change-syntax-table)
   "Mode for Itasca PFC 4.0  data files")
 
 ;; FLAC 7.0 specific
 
-(setq flac-fish-functions "\\<\\(a\\(?:bs\\|cos\\|n\\(?:d\\|gle\\|isotropic\\)\\|pp\\(?:_pnt\\|gw_pnt\\|ly\\|th_pnt\\)\\|r\\(?:ea\\|ray\\)\\|s\\(?:in\\|pect\\|x[xy]\\|yy\\|zz\\)\\|t\\(?:an2?\\|t\\(?:_pnt\\|ach\\)\\)\\|[34]\\)\\|b\\(?:a\\(?:ck\\|ud\\)\\|icoe\\|s\\(?:x[xy]\\|yy\\|zz\\)\\)\\|c\\(?:a\\(?:ll\\|se\\(?:_?of\\)?\\)\\|f_\\(?:axi\\|creep\\|dyn\\|ext\\|gw\\|ps\\|therm\\)\\|ga\\|har\\|lo\\(?:ck\\|se\\)\\|m_max\\|o\\(?:lumns\\|mmand\\|n\\(?:fig\\|stitutive\\(?:_?model\\)\\)\\|s\\)\\|parse\\|r\\(?:dt\\|eep\\|t\\(?:del\\|ime\\)\\)\\|s\\(?:c\\|x[xy]\\|yy\\|zz\\)\\|ycle\\)\\|d\\(?:a\\(?:mp\\(?:ing\\)?\\|tum\\)\\|e\\(?:fine\\|grad\\|nsity\\)\\|o_update\\|s\\(?:x[xy]\\|yy\\|zz\\)\\|ump\\|y\\(?:_state\\|dt\\(?:_gp[ij]\\)?\\|namic\\|t\\(?:del\\|ime\\)\\)\\|[ty]\\)\\|e\\(?:_p\\|cho\\|ga\\|l\\(?:astic\\|se\\)\\|nd\\(?:_\\(?:c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)\\|c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)?\\|rror\\|v_\\(?:p\\|tot\\)\\|x\\(?:it\\|p\\)\\)\\|f\\(?:2mod\\|_prop\\|c_arg\\|i\\(?:lcolor\\|sh\\(?:_msg\\|call\\)?\\|x\\)\\|l\\(?:ags\\|o\\(?:at\\|w\\)\\|prop\\)\\|m\\(?:em\\|od\\)\\|o\\(?:b[lu]\\|rce\\|s\\(?:_f\\)?\\)\\|r\\(?:ee\\|iend\\)\\|s\\(?:tring\\|[ir]\\)\\|tens\\)\\|g\\(?:2flow\\|e\\(?:n\\|t_mem\\)\\|flow\\|msmul\\|p\\(?:_copy\\|p\\)\\|r\\(?:\\(?:an\\|i\\)d\\)\\|w\\(?:dt\\|t\\(?:del\\|ime\\)\\)\\)\\|h\\(?:b[ms]\\|elp\\|is\\(?:file\\)?\\)\\|i\\(?:e\\(?:b\\(?:_pnt\\)?\\|rr\\)\\|face\\|gp\\|m\\(?:em\\|plicit\\)\\|n\\(?:formation\\|i\\(?:\\(?:mode\\|tia\\)l\\)\\|t\\(?:_pnt\\|erface\\)?\\)\\|tasca\\|zones\\|[fn]\\)\\|j\\(?:err\\|gp\\|zones\\)\\|l\\(?:arge\\|egend\\|ff_pnt\\|i\\(?:mits\\|st\\)\\|mul\\|n\\|o\\(?:g\\|op\\|se_mem\\)\\)\\|m\\(?:a\\(?:rk\\|t_\\(?:\\(?:inver\\|transpo\\)se\\)\\|x\\(?:dt\\)?\\)\\|e\\(?:chanical\\|m\\(?:ory\\)?\\|ssage\\)\\|in\\(?:dt\\)?\\|o\\(?:del?\\|hr-coulomb\\|\\(?:nchrom\\|vi\\)e\\)\\)\\|n\\(?:c\\(?:ontours\\|write\\)\\|e\\(?:rr\\(?:_fish\\)?\\|w\\)\\|grwater\\|mechanical\\|ot\\|step\\|thermal\\|ull\\|wgpp\\)\\|o\\(?:pen\\|r\\|ut\\)\\|p\\(?:_stress\\|a\\(?:c\\|\\(?:lett\\|[ru]s\\)e\\)\\|fast\\|l\\(?:ot\\|t\\(?:angle\\|\\(?:cohes\\|frict\\|tens\\)ion\\)\\)\\|o\\(?:ro2\\|wer\\)\\|r\\(?:e\\(?:_?parse\\)\\|int\\|op\\)\\|slow\\|[ip]\\)\\|quit\\|r\\(?:_integrate\\|a\\(?:nge\\|yleigh\\)\\|e\\(?:ad\\|s\\(?:et\\|tore\\)\\|turn\\|z_exe\\)\\|\\(?:ff_pn\\|sa\\)t\\)\\|s\\(?:_\\(?:3dd\\|dyn\\|echo\\|flow\\|imp\\|log\\|m\\(?:e\\(?:ch\\|ss\\)\\|ovie\\)\\|therm\\)\\|a\\(?:t\\|ve\\)\\|cl\\(?:in\\|ose\\)\\|e\\(?:ction\\|t\\)\\|gn\\|i\\(?:g[12]\\|n\\)\\|m\\(?:_max\\|all\\)\\|o\\(?:lve\\|pen\\)\\|qrt\\|read\\|s\\(?:[ir]3d\\|[ir]\\)?\\|t\\(?:ate\\|ep\\|op\\|r\\(?:_pnt\\|ing\\|ucture\\)\\)\\|write\\|x[xy]\\|y[sy]\\|zz\\)\\|t\\(?:a\\(?:b\\(?:_pnt\\|le\\(?:_size\\)?\\)\\|n\\)\\|e\\(?:mperature\\|n\\(?:flg\\|sion\\)\\)\\|flow\\|h\\(?:dt\\|e\\(?:n\\|rmal\\|ta\\)\\|t\\(?:del\\|ime\\)\\)\\|itle\\|olerance\\|rac\\(?:_pnt\\|k\\)\\|ype\\)\\|u\\(?:biquitous\\|cs\\|d\\(?:coe\\|m_pnt\\)\\|mul\\|n\\(?:b\\(?:al\\|flow\\)\\|mark\\)\\|rand\\)\\|v\\(?:_n\\(?:gw\\|mech\\|therm\\)\\|ector\\|g\\(?:a\\|p\\(?:0\\|c\\(?:n?w\\)\\)\\)\\|is\\(?:cous\\|rat\\)\\|ol_strain\\|s\\(?:x[xz]\\|yy\\|zz\\|[ir]\\)?\\)\\|w\\(?:ater\\|b\\(?:iot\\|ulk\\)\\|dens\\|hile\\(?:_?stepping\\)?\\|i\\(?:ndow\\|pp\\)\\|k\\(?:1[12]\\|22\\)\\|rite\\)\\|x\\(?:acc\\|body\\|disp\\|f\\(?:low\\|or\\(?:ce\\|m\\)\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\|ywrite\\)\\|y\\(?:acc\\|body\\|disp\\|f\\(?:low\\|orce\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\)\\|z\\(?:_\\(?:copy\\|group\\|hyst\\|model\\|prop\\)\\|art\\|d\\(?:e\\(?:1[12]\\|22\\|33\\)\\|pp\\|rot\\)\\|msmul\\|poros\\|s\\(?:1[12]\\|22\\|33\\|ub\\)\\|t\\(?:e[a-d]\\|s[a-d]\\)\\|visc\\|xbar\\)\\|[rxy]\\)\\>")
+(defconst flac-fish-functions "\\<\\(a\\(?:bs\\|cos\\|n\\(?:d\\|gle\\|isotropic\\)\\|pp\\(?:_pnt\\|gw_pnt\\|ly\\|th_pnt\\)\\|r\\(?:ea\\|ray\\)\\|s\\(?:in\\|pect\\|x[xy]\\|yy\\|zz\\)\\|t\\(?:an2?\\|t\\(?:_pnt\\|ach\\)\\)\\|[34]\\)\\|b\\(?:a\\(?:ck\\|ud\\)\\|icoe\\|s\\(?:x[xy]\\|yy\\|zz\\)\\)\\|c\\(?:a\\(?:ll\\|se\\(?:_?of\\)?\\)\\|f_\\(?:axi\\|creep\\|dyn\\|ext\\|gw\\|ps\\|therm\\)\\|ga\\|har\\|lo\\(?:ck\\|se\\)\\|m_max\\|o\\(?:lumns\\|mmand\\|n\\(?:fig\\|stitutive\\(?:_?model\\)\\)\\|s\\)\\|parse\\|r\\(?:dt\\|eep\\|t\\(?:del\\|ime\\)\\)\\|s\\(?:c\\|x[xy]\\|yy\\|zz\\)\\|ycle\\)\\|d\\(?:a\\(?:mp\\(?:ing\\)?\\|tum\\)\\|e\\(?:fine\\|grad\\|nsity\\)\\|o_update\\|s\\(?:x[xy]\\|yy\\|zz\\)\\|ump\\|y\\(?:_state\\|dt\\(?:_gp[ij]\\)?\\|namic\\|t\\(?:del\\|ime\\)\\)\\|[ty]\\)\\|e\\(?:_p\\|cho\\|ga\\|l\\(?:astic\\|se\\)\\|nd\\(?:_\\(?:c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)\\|c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)?\\|rror\\|v_\\(?:p\\|tot\\)\\|x\\(?:it\\|p\\)\\)\\|f\\(?:2mod\\|_prop\\|c_arg\\|i\\(?:lcolor\\|sh\\(?:_msg\\|call\\)?\\|x\\)\\|l\\(?:ags\\|o\\(?:at\\|w\\)\\|prop\\)\\|m\\(?:em\\|od\\)\\|o\\(?:b[lu]\\|rce\\|s\\(?:_f\\)?\\)\\|r\\(?:ee\\|iend\\)\\|s\\(?:tring\\|[ir]\\)\\|tens\\)\\|g\\(?:2flow\\|e\\(?:n\\|t_mem\\)\\|flow\\|msmul\\|p\\(?:_copy\\|p\\)\\|r\\(?:\\(?:an\\|i\\)d\\)\\|w\\(?:dt\\|t\\(?:del\\|ime\\)\\)\\)\\|h\\(?:b[ms]\\|elp\\|is\\(?:file\\)?\\)\\|i\\(?:e\\(?:b\\(?:_pnt\\)?\\|rr\\)\\|face\\|gp\\|m\\(?:em\\|plicit\\)\\|n\\(?:formation\\|i\\(?:\\(?:mode\\|tia\\)l\\)\\|t\\(?:_pnt\\|erface\\)?\\)\\|tasca\\|zones\\|[fn]\\)\\|j\\(?:err\\|gp\\|zones\\)\\|l\\(?:arge\\|egend\\|ff_pnt\\|i\\(?:mits\\|st\\)\\|mul\\|n\\|o\\(?:g\\|op\\|se_mem\\)\\)\\|m\\(?:a\\(?:rk\\|t_\\(?:\\(?:inver\\|transpo\\)se\\)\\|x\\(?:dt\\)?\\)\\|e\\(?:chanical\\|m\\(?:ory\\)?\\|ssage\\)\\|in\\(?:dt\\)?\\|o\\(?:del?\\|hr-coulomb\\|\\(?:nchrom\\|vi\\)e\\)\\)\\|n\\(?:c\\(?:ontours\\|write\\)\\|e\\(?:rr\\(?:_fish\\)?\\|w\\)\\|grwater\\|mechanical\\|ot\\|step\\|thermal\\|ull\\|wgpp\\)\\|o\\(?:pen\\|r\\|ut\\)\\|p\\(?:_stress\\|a\\(?:c\\|\\(?:lett\\|[ru]s\\)e\\)\\|fast\\|l\\(?:ot\\|t\\(?:angle\\|\\(?:cohes\\|frict\\|tens\\)ion\\)\\)\\|o\\(?:ro2\\|wer\\)\\|r\\(?:e\\(?:_?parse\\)\\|int\\|op\\)\\|slow\\|[ip]\\)\\|quit\\|r\\(?:_integrate\\|a\\(?:nge\\|yleigh\\)\\|e\\(?:ad\\|s\\(?:et\\|tore\\)\\|turn\\|z_exe\\)\\|\\(?:ff_pn\\|sa\\)t\\)\\|s\\(?:_\\(?:3dd\\|dyn\\|echo\\|flow\\|imp\\|log\\|m\\(?:e\\(?:ch\\|ss\\)\\|ovie\\)\\|therm\\)\\|a\\(?:t\\|ve\\)\\|cl\\(?:in\\|ose\\)\\|e\\(?:ction\\|t\\)\\|gn\\|i\\(?:g[12]\\|n\\)\\|m\\(?:_max\\|all\\)\\|o\\(?:lve\\|pen\\)\\|qrt\\|read\\|s\\(?:[ir]3d\\|[ir]\\)?\\|t\\(?:ate\\|ep\\|op\\|r\\(?:_pnt\\|ing\\|ucture\\)\\)\\|write\\|x[xy]\\|y[sy]\\|zz\\)\\|t\\(?:a\\(?:b\\(?:_pnt\\|le\\(?:_size\\)?\\)\\|n\\)\\|e\\(?:mperature\\|n\\(?:flg\\|sion\\)\\)\\|flow\\|h\\(?:dt\\|e\\(?:n\\|rmal\\|ta\\)\\|t\\(?:del\\|ime\\)\\)\\|itle\\|olerance\\|rac\\(?:_pnt\\|k\\)\\|ype\\)\\|u\\(?:biquitous\\|cs\\|d\\(?:coe\\|m_pnt\\)\\|mul\\|n\\(?:b\\(?:al\\|flow\\)\\|mark\\)\\|rand\\)\\|v\\(?:_n\\(?:gw\\|mech\\|therm\\)\\|ector\\|g\\(?:a\\|p\\(?:0\\|c\\(?:n?w\\)\\)\\)\\|is\\(?:cous\\|rat\\)\\|ol_strain\\|s\\(?:x[xz]\\|yy\\|zz\\|[ir]\\)?\\)\\|w\\(?:ater\\|b\\(?:iot\\|ulk\\)\\|dens\\|hile\\(?:_?stepping\\)?\\|i\\(?:ndow\\|pp\\)\\|k\\(?:1[12]\\|22\\)\\|rite\\)\\|x\\(?:acc\\|body\\|disp\\|f\\(?:low\\|or\\(?:ce\\|m\\)\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\|ywrite\\)\\|y\\(?:acc\\|body\\|disp\\|f\\(?:low\\|orce\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\)\\|z\\(?:_\\(?:copy\\|group\\|hyst\\|model\\|prop\\)\\|art\\|d\\(?:e\\(?:1[12]\\|22\\|33\\)\\|pp\\|rot\\)\\|msmul\\|poros\\|s\\(?:1[12]\\|22\\|33\\|ub\\)\\|t\\(?:e[a-d]\\|s[a-d]\\)\\|visc\\|xbar\\)\\|[rxy]\\)\\>")
 
 (define-generic-mode  'itasca-flac-mode
   '(";")
@@ -236,12 +246,12 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
     (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
           'font-lock-variable-name-face))
   '("\\.fdat$")
-   nil
+  (itasca-change-syntax-table)
   "A mode for Itasca FLAC data files")
 
 ;; FLAC3D specific
 
-(setq flac3d-fish-functions
+(defconst flac3d-fish-functions
 "at_pos at_slave at_type at_master at_masterzn
 at_zoneface at_delete at_weight at_qweight at_snap at_create
 
@@ -371,7 +381,7 @@ z_findface z_linkzone z_linkindex z_apply z_iecreate
 z_qualitytest z_facegroup z_faceextra z_faceremovegroup
 z_faceingroup")
 
-(setq flac3d-functions
+(defconst flac3d-functions
       (regexp-opt (mapcan #'split-string
                           (list
                            vector-functions
@@ -400,5 +410,5 @@ z_faceingroup")
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.f3dat$")
-  nil
+  (itasca-change-syntax-table)
   "Mode for Itasca FLAC3D  data files")
