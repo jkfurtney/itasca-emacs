@@ -10,7 +10,6 @@
 ;; -*- mode: itasca-pfc -*-
 ;;
 ;; to do:
-;; functions to automatically format and indent FISH code
 ;; redo FLAC mode
 ;; case insensitivity for highlighting
 
@@ -98,11 +97,47 @@ dvert_id dvert_pos")
 (defconst di-functions "di_find di_typeid di_typename di_end1 di_end2
 di_pos1 di_pos2")
 
-(defconst dtp-functions "dtp_list dtp_find dtp_get dtp_id dtp_name
-  dtp_stype dtp_snbp dtp_sparam dtp_smin dtp_smax dtp_otype
-  dtp_onbp dtp_oparam dtp_dmin dtp_dmax dtp_ddmin dtp_ddmax
-  dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
+(defconst dtp-functions "dtp_list dtp_find dtp_get dtp_id
+dtp_name dtp_stype dtp_snbp dtp_sparam dtp_smin dtp_smax
+dtp_otype dtp_onbp dtp_oparam dtp_dmin dtp_dmax dtp_ddmin
+dtp_ddmax dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
 
+(defconst re-kw-up "^[ \t]*\\(def\\|define\\|loop\\|command\\|if\\|case_of\\|caseof\\|section\\|case\\|else\\)")
+
+(defconst re-kw-down "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\|case\\|else\\)")
+
+(defconst re-kw-down2 "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\)")
+
+(defun fish-indent-line ()
+  "Indent current line as FISH code"
+  (interactive)
+  (beginning-of-line)
+  (if (bobp)
+      (indent-line-to 0)
+    (let ((not-indented t) (indent-width 2) cur-indent)
+      (if (looking-at re-kw-down)
+	  (progn
+	    (save-excursion
+	      (forward-line -1)
+	      (setq cur-indent (- (current-indentation) indent-width)))
+	    (if (< cur-indent 0)
+		(setq cur-indent 0)))
+	(save-excursion
+          (while not-indented
+            (forward-line -1)
+            (if (looking-at re-kw-down2)
+                (progn
+                  (setq cur-indent (current-indentation))
+                  (setq not-indented nil))
+              (if (looking-at re-kw-up)
+                  (progn
+                    (setq cur-indent (+ (current-indentation) indent-width))
+                    (setq not-indented nil))
+                (if (bobp)
+                    (setq not-indented nil)))))))
+      (if cur-indent
+          (indent-line-to cur-indent)
+        (indent-line-to 0)))))
 
 (defun itasca-change-syntax-table ()
   (modify-syntax-entry ?_ "w")
@@ -129,7 +164,9 @@ di_pos1 di_pos2")
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.dat$" "\\.fis$")
-  (itasca-change-syntax-table)
+   (list (lambda ()
+    (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+    (itasca-change-syntax-table)))
   "Mode for Itasca data files (not code specific)")
 
 ;; pfc 4.0 specific
@@ -231,7 +268,9 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.p3dat$")
-  (itasca-change-syntax-table)
+  (list (lambda ()
+    (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+    (itasca-change-syntax-table)))
   "Mode for Itasca PFC 4.0  data files")
 
 ;; FLAC 7.0 specific
@@ -246,7 +285,9 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
     (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
           'font-lock-variable-name-face))
   '("\\.fdat$")
-  (itasca-change-syntax-table)
+  (list (lambda ()
+    (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+    (itasca-change-syntax-table)))
   "A mode for Itasca FLAC data files")
 
 ;; FLAC3D specific
@@ -410,5 +451,7 @@ z_faceingroup")
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.f3dat$")
-  (itasca-change-syntax-table)
-  "Mode for Itasca FLAC3D  data files")
+  (list (lambda ()
+    (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+    (itasca-change-syntax-table)))
+  "Mode for Itasca FLAC3D data files")
