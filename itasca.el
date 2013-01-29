@@ -2,11 +2,15 @@
 ;; ---------------------------------------------------
 ;; FLAC FLAC3D UDEC 3DEC PFC www.itascacg.com/software
 ;;
-;; Installation: put this code into your .emacs file
+;; Installation: copy this file somwhere on the emacs load-path
+;; add (load "itasca.el") to your .emacs file.
 ;;
-;; to set the mode on a per-file basis
+;; To set the mode on a per-file basis: put a comment in the following
+;; form at the top of the file.
+;;
 ;; -*- mode: itasca-general -*-
 ;; -*- mode: itasca-flac -*-
+;; -*- mode: itasca-flac3d -*-
 ;; -*- mode: itasca-pfc -*-
 ;;
 ;; to do:
@@ -21,7 +25,8 @@ endif end_case endcase end_section endsection")
 
 (defconst kw-down-up "case else")
 
-(defconst kw-fish "array local global argument while null then")
+(defconst kw-fish "array local global argument while null then
+while_stepping whilestepping exit")
 
 (defconst vector-functions "vector xcomp ycomp zcomp cross dot unit")
 
@@ -41,7 +46,7 @@ normfromdipdd notify null out pointer_type principal_stress
 realtime sleep string strlen substr tolower toupper type")
 
 (defconst io-functions "write read close open sopen swrite sclose
-xmlparse get_socket lose_socket")
+xmlparse get_socket lose_socket sread")
 
 (defconst table-functions "del_table get_table table table_id
 table_name table_size vtable xtable ytable")
@@ -116,13 +121,13 @@ dtp_ddmax dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
       (indent-line-to 0)
     (let ((not-indented t) (indent-width 2) cur-indent)
       (if (looking-at re-kw-down)
-	  (progn
-	    (save-excursion
-	      (forward-line -1)
-	      (setq cur-indent (- (current-indentation) indent-width)))
-	    (if (< cur-indent 0)
-		(setq cur-indent 0)))
-	(save-excursion
+          (progn
+            (save-excursion
+              (forward-line -1)
+              (setq cur-indent (- (current-indentation) indent-width)))
+            (if (< cur-indent 0)
+                (setq cur-indent 0)))
+        (save-excursion
           (while not-indented
             (forward-line -1)
             (if (looking-at re-kw-down2)
