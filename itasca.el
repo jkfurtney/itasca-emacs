@@ -184,6 +184,9 @@ ccfd_zgradp ccfd_elevol ccfd_xelecent ccfd_yelecent ccfd_zelecent
 ccfd_xyzele ccfd_ballele ccfd_fint ccfd_xballff ccfd_yballff
 ccfd_zballff ccfd_elemu ccfd_elerho ccfd_elepress
 
+fc_x fc_y fc_z fc_xvel fc_yvel fc_zvel fc_pre fc_por fc_xfap fc_yfap
+fc_zfap fc_bxvel fc_byvel fc_bzvel fc_temp
+
 ball_head wall_head contact_head circ_head max_bid max_wid max_cid
 cycle step ccount gravx gravy gravz grav time tdel given_tdel
 safety_fac local_damp maddr e_kinetic e_friction e_strain e_bond
