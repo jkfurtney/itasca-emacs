@@ -12,6 +12,7 @@
 ;; -*- mode: itasca-flac -*-
 ;; -*- mode: itasca-flac3d -*-
 ;; -*- mode: itasca-pfc -*-
+;; -*- mode: itasca-udec -*-
 ;;
 ;; to do:
 ;; redo FLAC mode
@@ -463,3 +464,61 @@ z_faceingroup")
     (set (make-local-variable 'indent-line-function) 'fish-indent-line)
     (itasca-change-syntax-table)))
   "Mode for Itasca FLAC3D data files")
+
+
+
+; udec mode
+
+(defconst itasca-udec-functions "tdel step time xgrav ygrav
+grav_x grav_y block_head contact_head domain_head m_jkn m_jks
+b_next b_x b_y b_xvel b_yvel str_node_head str_elem_head
+cable_node_head cable_elem_head cycle unbal m_jfriction
+m_jcohesion m_jtension m_jdilation m_density m_bulk m_shear
+m_friction m_cohesion m_tension m_dilation b_type b_corner b_mat
+b_cons b_fix b_rvel b_area b_mass b_moi b_dsf b_xforce b_yforce
+b_mom b_xload b_yload b_bex b_gp b_zone gp_next gp_corner gp_x
+gp_y gp_xvel gp_yvel gp_xforce gp_yforce gp_mass gp_dsf gp_xdis
+gp_ydis z_next z_gp z_x z_y z_sxx z_sxy z_syy z_szz z_mass z_rot
+z_state z_zex c_next c_type c_x c_y c_mat c_cons c_b1 c_b2
+c_link1 c_link2 c_d1 c_d2 c_sdis c_ndis c_sforce c_nforce
+c_length c_nx c_ny c_obj_type d_obj_type d_next d_vol d_pp
+d_contact d_fix d_x d_y cor_obj_type cor_link cor_rlink cor_block
+cor_x cor_y cor_xvel cor_yvel cor_gp cor_bou imem fmem
+outer_domain fluid_densityfluid_bulk fracb fracz sup_head r_head
+bou_head gp_near z_near b_near cor_near d_near c_near z_block
+z_mat z_bulk z_shear gp_bou bou_gp table_head ftime thtime thdt
+str_int_head c_jex z_pp cor_xdis cor_ydis r_prop r_astiff
+r_sstiff r_length r_uaxial r_ushear r_rfac r_aexp r_sexp r_str
+ibou_head b_extra c_extra cor_extra d_extra gp_extra z_extra
+crtdel crtime cf_creep cf_thermal cf_pstress cf_cell cf_axi
+cf_fluid z_prop m_jrfriction m_jrescoh m_jrtension sol_ratio
+sol_fob sol_fmag sol_rloc sol_rmax code_name version sub_version
+rel_version z_model j_model j_prop d_temp set_error z_inside
+bou_xreaction bou_yreactionbou_near z_fsi z_fsr z_density z_biot
+z_group b_group c_group gp_addxmass tgps_head tgps_next tgps_type
+tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
+
+
+(defconst itasca-udec-functions
+      (regexp-opt (mapcan #'split-string
+                          (list
+                           vector-functions
+                           string-functions
+                           math-functions
+                           table-functions
+                           mem-functions
+                           general-functions
+                           io-functions
+                           itasca-udec-functions )) 'words))
+
+(define-generic-mode  'itasca-udec-mode
+  '(";")
+  kw
+  (list (cons itasca-udec-functions 'font-lock-type-face)
+        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+              'font-lock-variable-name-face))
+  '("\\.p3dat$")
+  (list (lambda ()
+    (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+    (itasca-change-syntax-table)))
+  "Mode for Itasca UDEC 6.0 data files")
