@@ -1,0 +1,4 @@
+def ${1:inline}
+    $0
+end
+$1

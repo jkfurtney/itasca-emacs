@@ -1,0 +1,6 @@
+${1:bp} = ${2:ball_head}
+loop while $1 # 0
+     $0
+
+     $1 = ${3:b_next}($1)
+end_loop
