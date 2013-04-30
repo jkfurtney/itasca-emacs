@@ -172,6 +172,9 @@ dtp_ddmax dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
   '("\\.dat$" "\\.fis$")
    (list (lambda ()
     (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+	  (set (make-local-variable 'imenu-case-fold-search) t)
+	  (set (make-local-variable  'imenu-generic-expression)
+	       (list (list nil "\s*def\s+\\([a-z_]+\\)" 1)))
     (itasca-change-syntax-table)))
   "Mode for Itasca data files (not code specific)")
 
@@ -278,8 +281,12 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
               'font-lock-variable-name-face))
   '("\\.p3dat$")
   (list (lambda ()
-    (set (make-local-variable 'indent-line-function) 'fish-indent-line)
-    (itasca-change-syntax-table)))
+	  (set (make-local-variable 'imenu-case-fold-search) t)
+	  (set (make-local-variable  'imenu-generic-expression)
+	       (list (list nil "\s*def\s+\\([a-z_]+\\)" 1)))
+
+	  (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+	  (itasca-change-syntax-table)))
   "Mode for Itasca PFC 4.0  data files")
 
 ;; FLAC 7.0 specific
@@ -290,13 +297,17 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
   '(";")
   kw
   (list
-    (cons flac-fish-functions  'font-lock-type-face)
-    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-          'font-lock-variable-name-face))
+   (cons flac-fish-functions  'font-lock-type-face)
+   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+	 'font-lock-variable-name-face))
   '("\\.fdat$")
   (list (lambda ()
-    (set (make-local-variable 'indent-line-function) 'fish-indent-line)
-    (itasca-change-syntax-table)))
+	  (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+	  (set (make-local-variable 'imenu-case-fold-search) t)
+	  (set (make-local-variable  'imenu-generic-expression)
+	       (list (list nil "\s*def\s+\\([a-z_]+\\)" 1)))
+
+	  (itasca-change-syntax-table)))
   "A mode for Itasca FLAC data files")
 
 ;; FLAC3D specific
@@ -461,8 +472,11 @@ z_faceingroup")
               'font-lock-variable-name-face))
   '("\\.f3dat$")
   (list (lambda ()
-    (set (make-local-variable 'indent-line-function) 'fish-indent-line)
-    (itasca-change-syntax-table)))
+	  (set (make-local-variable 'imenu-case-fold-search) t)
+	  (set (make-local-variable  'imenu-generic-expression)
+	       (list (list nil "\s*def\s+\\([a-z_]+\\)" 1)))
+	  (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+	  (itasca-change-syntax-table)))
   "Mode for Itasca FLAC3D data files")
 
 
@@ -515,10 +529,28 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   '(";")
   kw
   (list (cons itasca-udec-functions 'font-lock-type-face)
-        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-              'font-lock-variable-name-face))
-  '("\\.p3dat$")
+	(cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+	      'font-lock-variable-name-face))
+  '("\\.udat$")
   (list (lambda ()
-    (set (make-local-variable 'indent-line-function) 'fish-indent-line)
-    (itasca-change-syntax-table)))
+	  (set (make-local-variable 'imenu-case-fold-search) t)
+	  (set (make-local-variable  'imenu-generic-expression)
+	       (list (list nil "\s*def\s+\\([a-z_]+\\)" 1)))
+	  (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+	  (itasca-change-syntax-table)))
   "Mode for Itasca UDEC 6.0 data files")
+
+ ;; (defconst udec-exe "C:/Users/Itasca/Desktop/UDEC500/Exe32/udec500.exe")
+
+ ;; (setq udec-process nil)
+
+ ;; (defun start-udec () (interactive)
+ ;;   (setq udec-process  (start-process "udec" "*udec-output*" udec-exe )))
+
+ ;; (defun udec-buffer () (interactive)
+ ;;   (process-send-string "*udec-output*" (format "call %s\n"(buffer-file-name))))
+
+ ;; (defun end-udec () (interactive)
+ ;;   (delete-process udec-process))
+
+					; support imenu, which-func-mode
