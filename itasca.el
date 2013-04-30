@@ -130,6 +130,7 @@ dtp_ddmax dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
                 (setq cur-indent 0)))
         (save-excursion
           (while not-indented
+
             (forward-line -1)
             (if (looking-at re-kw-down2)
                 (progn
@@ -174,7 +175,7 @@ dtp_ddmax dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
     (set (make-local-variable 'indent-line-function) 'fish-indent-line)
 	  (set (make-local-variable 'imenu-case-fold-search) t)
 	  (set (make-local-variable  'imenu-generic-expression)
-	       (list (list nil "\s*def\s+\\([a-z_]+\\)" 1)))
+	       (list (list nil itasca-defun-start-regexp 1)))
     (itasca-change-syntax-table)))
   "Mode for Itasca data files (not code specific)")
 
@@ -283,7 +284,7 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
   (list (lambda ()
 	  (set (make-local-variable 'imenu-case-fold-search) t)
 	  (set (make-local-variable  'imenu-generic-expression)
-	       (list (list nil "\s*def\s+\\([a-z_]+\\)" 1)))
+	       (list (list nil itasca-defun-start-regexp 1)))
 
 	  (set (make-local-variable 'indent-line-function) 'fish-indent-line)
 	  (itasca-change-syntax-table)))
@@ -305,7 +306,7 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
 	  (set (make-local-variable 'indent-line-function) 'fish-indent-line)
 	  (set (make-local-variable 'imenu-case-fold-search) t)
 	  (set (make-local-variable  'imenu-generic-expression)
-	       (list (list nil "\s*def\s+\\([a-z_]+\\)" 1)))
+	       (list (list nil itasca-defun-start-regexp 1)))
 
 	  (itasca-change-syntax-table)))
   "A mode for Itasca FLAC data files")
@@ -474,8 +475,12 @@ z_faceingroup")
   (list (lambda ()
 	  (set (make-local-variable 'imenu-case-fold-search) t)
 	  (set (make-local-variable  'imenu-generic-expression)
-	       (list (list nil "\s*def\s+\\([a-z_]+\\)" 1)))
+	       (list (list nil itasca-defun-start-regexp 1)))
 	  (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+	  (set (make-local-variable 'beginning-of-defun-function)
+	       #'itasca-begining-of-defun-function)
+	  (set (make-local-variable 'end-of-defun-function)
+	       #'itasca-end-of-defun-function)
 	  (itasca-change-syntax-table)))
   "Mode for Itasca FLAC3D data files")
 
@@ -535,7 +540,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list (lambda ()
 	  (set (make-local-variable 'imenu-case-fold-search) t)
 	  (set (make-local-variable  'imenu-generic-expression)
-	       (list (list nil "\s*def\s+\\([a-z_]+\\)" 1)))
+	       (list (list nil itasca-defun-start-regexp 1)))
 	  (set (make-local-variable 'indent-line-function) 'fish-indent-line)
 	  (itasca-change-syntax-table)))
   "Mode for Itasca UDEC 6.0 data files")
@@ -553,4 +558,30 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
  ;; (defun end-udec () (interactive)
  ;;   (delete-process udec-process))
 
-					; support imenu, which-func-mode
+(defconst itasca-defun-start-regexp "^\s*def\s+\\([a-z_]+\\)")
+(defconst itasca-defun-end-regexp "^\s*end[^a-z_0-9][\s;]*")
+
+
+(defun itasca-begining-of-defun-function ()
+  "Move point up to the current FISH function definition line. If
+point is on a function definition line jump up to the next
+FISH function definition."
+  (interactive)
+  (beginning-of-line)
+  (if (looking-at itasca-defun-start-regexp)
+      (previous-line))
+  (while (and (not (looking-at itasca-defun-start-regexp))
+	      (not (bobp)))
+    (previous-line)))
+
+(defun itasca-end-of-defun-function ()
+  "Move point down to the end of the current FISH function definition.
+If point is on the end of a function already jump down to the end
+of the next FISH function definition"
+  (interactive)
+  (beginning-of-line)
+  (if (looking-at itasca-defun-end-regexp)
+      (next-line))
+  (while (and (not (looking-at itasca-defun-end-regexp))
+	      (not (eobp)))
+    (next-line)))
