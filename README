@@ -40,17 +40,17 @@ form at the top of the file.
 
 These modes provide support for navigation by
 
-* `beginning-of-defun` (C-M-a) Jump to the beginning of the current
+* `beginning-of-defun` `C-M-a` Jump to the beginning of the current
 FISH function.
 
-* `end-of-defun` (C-M-e) Jump to the end of the current FISH function.
+* `end-of-defun` `C-M-e` Jump to the end of the current FISH function.
 
 * `imenu` Support for jumping to FISH function definitions via an interactive menu.
 
 ### Indentation
 
 Tab indents a line of FISH code to the appropriate depth.
-`indent-region` C-M-\ also works.
+`indent-region` `C-M-\` also works.
 
 ### Yasnippet expansions
 
