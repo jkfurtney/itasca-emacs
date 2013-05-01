@@ -538,8 +538,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
  ;;   (delete-process udec-process))
 
 (defconst itasca-defun-start-regexp "^\s*def\s+\\([a-z_]+\\)")
-(defconst itasca-defun-end-regexp "^\s*end[^a-z_0-9][\s;]*")
-
+(defconst itasca-defun-end-regexp "^\s*end[^a-z_0-9]*[\s;]*")
 
 (defun itasca-begining-of-defun-function ()
   "Move point up to the current FISH function definition line. If
@@ -578,3 +577,31 @@ of the next FISH function definition"
   (set (make-local-variable 'end-of-defun-function)
        #'itasca-end-of-defun-function)
   (itasca-change-syntax-table))
+
+
+(defvar itasca-test-fish-code "
+
+; a comment
+
+def func1
+  oo=asd
+  ff=1234.
+end ; junk
+
+junk
+
+def func2
+  stuff
+
+  a comment
+end
+")
+; why does this test fail??
+(ert-deftest test-itasca-defun-nav ()
+  (with-temp-buffer
+    (insert itasca-test-fish-code)
+    (goto-char (point-max))
+    (itasca-begining-of-defun-function)
+    (let ((current-line (buffer-substring-no-properties
+			 (point) (point-at-eol))))
+      (should (string= current-line "def func2")))))
