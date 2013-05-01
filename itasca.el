@@ -2,22 +2,13 @@
 ;; ---------------------------------------------------
 ;; FLAC FLAC3D UDEC 3DEC PFC www.itascacg.com/software
 ;;
-;; Installation: copy this file somwhere on the emacs load-path
-;; add (load "itasca.el") to your .emacs file.
-;;
-;; To set the mode on a per-file basis: put a comment in the following
-;; form at the top of the file.
-;;
-;; -*- mode: itasca-general -*-
-;; -*- mode: itasca-flac -*-
-;; -*- mode: itasca-flac3d -*-
-;; -*- mode: itasca-pfc -*-
-;; -*- mode: itasca-udec -*-
+;; see Readme.txt for more information
 ;;
 ;; to do:
+;; fix global namespace pollution
 ;; redo FLAC mode
 ;; case insensitivity for highlighting
-
+;; 3DEC mode
 
 (defconst kw-up "def define loop command if case_of caseof section")
 
@@ -170,7 +161,7 @@ dtp_ddmax dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
   (list (cons general-functions 'font-lock-type-face)
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
-  '("\\.dat$" "\\.fis$")
+  '("\\.dat$" "\\.fis$" "\\.fin$")
   (list (lambda ()
 	  (itasca-setup-mode)
 	  (set (make-local-variable 'mode-name) "Itasca")))
@@ -277,7 +268,7 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
   (list (cons pfc-functions 'font-lock-type-face)
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
-  '("\\.p3dat$")
+  '("\\.p3dat$" "\\.p2dat")
   (list (lambda ()
 	  (itasca-setup-mode)
 	  (set (make-local-variable 'mode-name) "PFC")))
@@ -525,20 +516,16 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   "Mode for Itasca UDEC 6.0 data files")
 
  ;; (defconst udec-exe "C:/Users/Itasca/Desktop/UDEC500/Exe32/udec500.exe")
-
  ;; (setq udec-process nil)
-
  ;; (defun start-udec () (interactive)
  ;;   (setq udec-process  (start-process "udec" "*udec-output*" udec-exe )))
-
  ;; (defun udec-buffer () (interactive)
  ;;   (process-send-string "*udec-output*" (format "call %s\n"(buffer-file-name))))
-
  ;; (defun end-udec () (interactive)
  ;;   (delete-process udec-process))
 
 (defconst itasca-defun-start-regexp "^\s*def\s+\\([a-z_]+\\)")
-(defconst itasca-defun-end-regexp "^\s*end[^a-z_0-9]*[\s;]*")
+(defconst itasca-defun-end-regexp "^ *end\\( +\\|;+\\|$\\)")
 
 (defun itasca-begining-of-defun-function ()
   "Move point up to the current FISH function definition line. If
@@ -550,7 +537,7 @@ FISH function definition."
       (previous-line))
   (while (and (not (looking-at itasca-defun-start-regexp))
 	      (not (bobp)))
-    (previous-line)))
+    (previous-line) (beginning-of-line)))
 
 (defun itasca-end-of-defun-function ()
   "Move point down to the end of the current FISH function definition.
@@ -562,7 +549,7 @@ of the next FISH function definition"
       (next-line))
   (while (and (not (looking-at itasca-defun-end-regexp))
 	      (not (eobp)))
-    (next-line)))
+    (next-line) (beginning-of-line)))
 
 (defun itasca-setup-mode ()
   "set buffer local variables for itasca modes"
@@ -579,29 +566,66 @@ of the next FISH function definition"
   (itasca-change-syntax-table))
 
 
-(defvar itasca-test-fish-code "
+(defvar itasca-test-fish-code "; a comment
 
-; a comment
-
-def func1
-  oo=asd
+DEF func1;
+  oo=end_time
   ff=1234.
 end ; junk
 
-junk
+;def old_function
+;junk commented out
+;end
 
-def func2
+defjunk
+endjunk
+ endjunk
+ defjunk
+endJUNK
+
+def  func2 ; comment
   stuff
 
   a comment
-end
+ end
+
+ def func3
+  stuff and junk
+  foo
+end;
+
 ")
-; why does this test fail??
+
 (ert-deftest test-itasca-defun-nav ()
   (with-temp-buffer
     (insert itasca-test-fish-code)
     (goto-char (point-max))
+
     (itasca-begining-of-defun-function)
     (let ((current-line (buffer-substring-no-properties
 			 (point) (point-at-eol))))
-      (should (string= current-line "def func2")))))
+      (should (equal current-line " def func3")))
+
+    (itasca-begining-of-defun-function)
+    (let ((current-line (buffer-substring-no-properties
+			 (point) (point-at-eol))))
+      (should (equal current-line "def  func2 ; comment")))
+
+    (itasca-begining-of-defun-function)
+    (let ((current-line (buffer-substring-no-properties
+			 (point) (point-at-eol))))
+      (should (equal current-line "DEF func1;")))
+    (itasca-end-of-defun-function)
+    (let ((current-line (buffer-substring-no-properties
+			 (point) (point-at-eol))))
+      (should (equal current-line "end ; junk")))
+    (itasca-end-of-defun-function)
+    (let ((current-line (buffer-substring-no-properties
+			 (point) (point-at-eol))))
+      (should (equal current-line " end")))
+    (itasca-end-of-defun-function)
+    (let ((current-line (buffer-substring-no-properties
+			 (point) (point-at-eol))))
+      (should (equal current-line "end;")))))
+
+(provide 'itasca)
