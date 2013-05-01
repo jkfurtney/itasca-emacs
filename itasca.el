@@ -142,7 +142,7 @@ dtp_ddmax dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
   (modify-syntax-entry ?' "\""))
 
 (defconst general-mode-functions
-      (regexp-opt (mapcan #'split-string (list
+      (regexp-opt (cl-mapcan #'split-string (list
                                           vector-functions
                                           string-functions
                                           general-functions
@@ -151,7 +151,7 @@ dtp_ddmax dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
                                           mem-functions
                                           io-functions )) 'words))
 
-(defconst kw (mapcan #'split-string (list kw-up kw-down kw-down-up kw-fish)))
+(defconst kw (cl-mapcan #'split-string (list kw-up kw-down kw-down-up kw-fish)))
 
 (require 'generic-x)
 
@@ -251,7 +251,7 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
 
 
 (defconst pfc-functions
-      (regexp-opt (mapcan #'split-string
+      (regexp-opt (cl-mapcan #'split-string
                           (list
                            vector-functions
                            string-functions
@@ -424,7 +424,7 @@ z_qualitytest z_facegroup z_faceextra z_faceremovegroup
 z_faceingroup")
 
 (defconst flac3d-functions
-      (regexp-opt (mapcan #'split-string
+      (regexp-opt (cl-mapcan #'split-string
                           (list
                            vector-functions
                            string-functions
@@ -492,7 +492,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 
 
 (defconst itasca-udec-functions
-      (regexp-opt (mapcan #'split-string
+      (regexp-opt (cl-mapcan #'split-string
                           (list
                            vector-functions
                            string-functions
