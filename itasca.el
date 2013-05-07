@@ -483,10 +483,10 @@ FISH function definition."
   (interactive)
   (beginning-of-line)
   (if (looking-at itasca-defun-start-regexp)
-      (previous-line))
+      (forward-line -1))
   (while (and (not (looking-at itasca-defun-start-regexp))
 	      (not (bobp)))
-    (previous-line) (beginning-of-line)))
+    (forward-line -1)))
 
 (defun itasca-end-of-defun-function ()
   "Move point down to the end of the current FISH function definition.
@@ -495,10 +495,10 @@ of the next FISH function definition"
   (interactive)
   (beginning-of-line)
   (if (looking-at itasca-defun-end-regexp)
-      (next-line))
+      (forward-line))
   (while (and (not (looking-at itasca-defun-end-regexp))
 	      (not (eobp)))
-    (next-line) (beginning-of-line)))
+    (forward-line)))
 
 (defun itasca-change-syntax-table ()
   (modify-syntax-entry ?_ "w")
@@ -535,7 +535,7 @@ defjunk
 endjunk
  endjunk
  defjunk
-endJUNK
+endJUNK loooong l ********************************************************************************
 
 def  func2 ; comment
   stuff
