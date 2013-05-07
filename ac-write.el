@@ -1,5 +1,7 @@
 
-;; write out keywords for use in auto completion
+;; This file is not needed for the Itasca modes,
+;; it writes out keywords for use in auto completion
+;; which should already be included in the ac-dict/ directory
 
 (require 'itasca)
 
@@ -9,8 +11,16 @@
       (insert
        (format "%s\n" word)))))
 
-(write-ac-dict-file "ac-dict/itasca-udec-mode"
-		    itasca-udec-functions)
+(defun itasca-write-ac-defs ()
+  (write-ac-dict-file "ac-dict/itasca-general-mode"
+		      itasca-general-function-list)
+  (write-ac-dict-file "ac-dict/itasca-pfc-mode"
+		      itasca-pfc-function-list)
+  ;; (write-ac-dict-file "ac-dict/itasca-flac-mode"
+  ;; 		    itasca-flac-function-list)
+  (write-ac-dict-file "ac-dict/itasca-flac3d-mode"
+		      itasca-flac3d-function-list)
+  (write-ac-dict-file "ac-dict/itasca-udec-mode"
+		      itasca-udec-function-list))
 
-(write-ac-dict-file "ac-dict/itasca-pfc-mode"
-		    itasca-pfc-functions)
+(itasca-write-ac-defs)

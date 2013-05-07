@@ -60,3 +60,20 @@ where yasnippet can find them or add something like this to your
 .emacs file.
 
     (setq yas/snippet-dirs '("c:/src/itasca-emacs/snippets"))
+
+### Auto-complete mode
+
+If you have `auto-complete-mode` installed FISH function names will be
+auto-completed.
+
+    (require 'auto-complete-config)
+    (ac-config-default)
+
+    (add-to-list 'ac-dictionary-directories "c:/src/itasca-emacs/ac-dict")
+
+    (progn
+      (add-to-list 'ac-modes 'itasca-general-mode)
+      (add-to-list 'ac-modes 'itasca-pfc-mode)
+      (add-to-list 'ac-modes 'itasca-flac-mode)
+      (add-to-list 'ac-modes 'itasca-flac3d-mode)
+      (add-to-list 'ac-modes 'itasca-udec-mode))
