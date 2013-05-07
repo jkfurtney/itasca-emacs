@@ -10,14 +10,12 @@
 ;; case insensitivity for highlighting
 ;; 3DEC mode
 
-(defconst kw-up "def define loop command if case_of caseof section")
+(require 'generic-x)
 
-(defconst kw-down "end end_loop endloop end_command endcommand end_if
-endif end_case endcase end_section endsection")
-
-(defconst kw-down-up "case else")
-
-(defconst kw-fish "array local global argument while null then
+(defconst itasca-mode-keywords "def define loop command if
+case_of caseof section end end_loop endloop end_command
+endcommand end_if endif end_case endcase end_section endsection
+case else array local global argument while null then
 while_stepping whilestepping exit")
 
 (defconst vector-functions "vector xcomp ycomp zcomp cross dot unit")
@@ -44,7 +42,6 @@ xmlparse get_socket lose_socket sread")
 table_name table_size vtable xtable ytable")
 
 (defconst mem-functions "get_mem lose_mem mem")
-
 
 ;; new in FLAC3D 5.0
 (defconst uds-functions "uds_list uds_head uds_next uds_find uds_near
@@ -99,77 +96,9 @@ dtp_name dtp_stype dtp_snbp dtp_sparam dtp_smin dtp_smax
 dtp_otype dtp_onbp dtp_oparam dtp_dmin dtp_dmax dtp_ddmin
 dtp_ddmax dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
 
-(defconst re-kw-up "^[ \t]*\\(def\\|define\\|loop\\|command\\|if\\|case_of\\|caseof\\|section\\|case\\|else\\)")
-
-(defconst re-kw-down "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\|case\\|else\\)")
-
-(defconst re-kw-down2 "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\)")
-
-(defun fish-indent-line ()
-  "Indent current line as FISH code"
-  (interactive)
-  (beginning-of-line)
-  (if (bobp)
-      (indent-line-to 0)
-    (let ((not-indented t) (indent-width 2) cur-indent)
-      (if (looking-at re-kw-down)
-          (progn
-            (save-excursion
-              (forward-line -1)
-              (setq cur-indent (- (current-indentation) indent-width)))
-            (if (< cur-indent 0)
-                (setq cur-indent 0)))
-        (save-excursion
-          (while not-indented
-
-            (forward-line -1)
-            (if (looking-at re-kw-down2)
-                (progn
-                  (setq cur-indent (current-indentation))
-                  (setq not-indented nil))
-              (if (looking-at re-kw-up)
-                  (progn
-                    (setq cur-indent (+ (current-indentation) indent-width))
-                    (setq not-indented nil))
-                (if (bobp)
-                    (setq not-indented nil)))))))
-      (if cur-indent
-          (indent-line-to cur-indent)
-        (indent-line-to 0)))))
-
-(defun itasca-change-syntax-table ()
-  (modify-syntax-entry ?_ "w")
-  (modify-syntax-entry ?' "\""))
-
-(defconst general-mode-functions
-      (regexp-opt (cl-mapcan #'split-string (list
-                                          vector-functions
-                                          string-functions
-                                          general-functions
-                                          math-functions
-                                          table-functions
-                                          mem-functions
-                                          io-functions )) 'words))
-
-(defconst kw (cl-mapcan #'split-string (list kw-up kw-down kw-down-up kw-fish)))
-
-(require 'generic-x)
-
-(define-generic-mode  'itasca-general-mode
-  '(";")
-  kw
-  (list (cons general-functions 'font-lock-type-face)
-        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-              'font-lock-variable-name-face))
-  '("\\.dat$" "\\.fis$" "\\.fin$")
-  (list (lambda ()
-	  (itasca-setup-mode)
-	  (set (make-local-variable 'mode-name) "Itasca")))
-  "Mode for Itasca data files (not code specific)")
-
 ;; pfc 4.0 specific
 
-(defconst pfc-fish-functions
+(defconst itasca-pfc-function-list
 "ccfd_nele ccfd_nnode ccfd_elenode ccfd_xnode ccfd_ynode
 ccfd_znode ccfd_por ccfd_xvel ccfd_yvel ccfd_zvel ccfd_xdrag
 ccfd_ydrag ccfd_zdrag ccfd_t_s ccfd_fite ccfd_xgradp ccfd_ygradp
@@ -249,51 +178,14 @@ del_wall w_color w_flist w_wlist w_extra w_fix w_delete w_rxvel
 w_ryvel w_rzvel w_rvel w_vrvel w_xmom w_ymom w_zmom w_mom w_vmom
 w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
 
-
-(defconst pfc-functions
-      (regexp-opt (cl-mapcan #'split-string
-                          (list
-                           vector-functions
-                           string-functions
-                           math-functions
-                           table-functions
-                           mem-functions
-                           general-functions
-                           io-functions
-                           pfc-fish-functions )) 'words))
-
-(define-generic-mode  'itasca-pfc-mode
-  '(";")
-  kw
-  (list (cons pfc-functions 'font-lock-type-face)
-        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-              'font-lock-variable-name-face))
-  '("\\.p3dat$" "\\.p2dat")
-  (list (lambda ()
-	  (itasca-setup-mode)
-	  (set (make-local-variable 'mode-name) "PFC")))
-  "Mode for Itasca PFC 4.0  data files")
-
 ;; FLAC 7.0 specific
+;; fix this
 
-(defconst flac-fish-functions "\\<\\(a\\(?:bs\\|cos\\|n\\(?:d\\|gle\\|isotropic\\)\\|pp\\(?:_pnt\\|gw_pnt\\|ly\\|th_pnt\\)\\|r\\(?:ea\\|ray\\)\\|s\\(?:in\\|pect\\|x[xy]\\|yy\\|zz\\)\\|t\\(?:an2?\\|t\\(?:_pnt\\|ach\\)\\)\\|[34]\\)\\|b\\(?:a\\(?:ck\\|ud\\)\\|icoe\\|s\\(?:x[xy]\\|yy\\|zz\\)\\)\\|c\\(?:a\\(?:ll\\|se\\(?:_?of\\)?\\)\\|f_\\(?:axi\\|creep\\|dyn\\|ext\\|gw\\|ps\\|therm\\)\\|ga\\|har\\|lo\\(?:ck\\|se\\)\\|m_max\\|o\\(?:lumns\\|mmand\\|n\\(?:fig\\|stitutive\\(?:_?model\\)\\)\\|s\\)\\|parse\\|r\\(?:dt\\|eep\\|t\\(?:del\\|ime\\)\\)\\|s\\(?:c\\|x[xy]\\|yy\\|zz\\)\\|ycle\\)\\|d\\(?:a\\(?:mp\\(?:ing\\)?\\|tum\\)\\|e\\(?:fine\\|grad\\|nsity\\)\\|o_update\\|s\\(?:x[xy]\\|yy\\|zz\\)\\|ump\\|y\\(?:_state\\|dt\\(?:_gp[ij]\\)?\\|namic\\|t\\(?:del\\|ime\\)\\)\\|[ty]\\)\\|e\\(?:_p\\|cho\\|ga\\|l\\(?:astic\\|se\\)\\|nd\\(?:_\\(?:c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)\\|c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)?\\|rror\\|v_\\(?:p\\|tot\\)\\|x\\(?:it\\|p\\)\\)\\|f\\(?:2mod\\|_prop\\|c_arg\\|i\\(?:lcolor\\|sh\\(?:_msg\\|call\\)?\\|x\\)\\|l\\(?:ags\\|o\\(?:at\\|w\\)\\|prop\\)\\|m\\(?:em\\|od\\)\\|o\\(?:b[lu]\\|rce\\|s\\(?:_f\\)?\\)\\|r\\(?:ee\\|iend\\)\\|s\\(?:tring\\|[ir]\\)\\|tens\\)\\|g\\(?:2flow\\|e\\(?:n\\|t_mem\\)\\|flow\\|msmul\\|p\\(?:_copy\\|p\\)\\|r\\(?:\\(?:an\\|i\\)d\\)\\|w\\(?:dt\\|t\\(?:del\\|ime\\)\\)\\)\\|h\\(?:b[ms]\\|elp\\|is\\(?:file\\)?\\)\\|i\\(?:e\\(?:b\\(?:_pnt\\)?\\|rr\\)\\|face\\|gp\\|m\\(?:em\\|plicit\\)\\|n\\(?:formation\\|i\\(?:\\(?:mode\\|tia\\)l\\)\\|t\\(?:_pnt\\|erface\\)?\\)\\|tasca\\|zones\\|[fn]\\)\\|j\\(?:err\\|gp\\|zones\\)\\|l\\(?:arge\\|egend\\|ff_pnt\\|i\\(?:mits\\|st\\)\\|mul\\|n\\|o\\(?:g\\|op\\|se_mem\\)\\)\\|m\\(?:a\\(?:rk\\|t_\\(?:\\(?:inver\\|transpo\\)se\\)\\|x\\(?:dt\\)?\\)\\|e\\(?:chanical\\|m\\(?:ory\\)?\\|ssage\\)\\|in\\(?:dt\\)?\\|o\\(?:del?\\|hr-coulomb\\|\\(?:nchrom\\|vi\\)e\\)\\)\\|n\\(?:c\\(?:ontours\\|write\\)\\|e\\(?:rr\\(?:_fish\\)?\\|w\\)\\|grwater\\|mechanical\\|ot\\|step\\|thermal\\|ull\\|wgpp\\)\\|o\\(?:pen\\|r\\|ut\\)\\|p\\(?:_stress\\|a\\(?:c\\|\\(?:lett\\|[ru]s\\)e\\)\\|fast\\|l\\(?:ot\\|t\\(?:angle\\|\\(?:cohes\\|frict\\|tens\\)ion\\)\\)\\|o\\(?:ro2\\|wer\\)\\|r\\(?:e\\(?:_?parse\\)\\|int\\|op\\)\\|slow\\|[ip]\\)\\|quit\\|r\\(?:_integrate\\|a\\(?:nge\\|yleigh\\)\\|e\\(?:ad\\|s\\(?:et\\|tore\\)\\|turn\\|z_exe\\)\\|\\(?:ff_pn\\|sa\\)t\\)\\|s\\(?:_\\(?:3dd\\|dyn\\|echo\\|flow\\|imp\\|log\\|m\\(?:e\\(?:ch\\|ss\\)\\|ovie\\)\\|therm\\)\\|a\\(?:t\\|ve\\)\\|cl\\(?:in\\|ose\\)\\|e\\(?:ction\\|t\\)\\|gn\\|i\\(?:g[12]\\|n\\)\\|m\\(?:_max\\|all\\)\\|o\\(?:lve\\|pen\\)\\|qrt\\|read\\|s\\(?:[ir]3d\\|[ir]\\)?\\|t\\(?:ate\\|ep\\|op\\|r\\(?:_pnt\\|ing\\|ucture\\)\\)\\|write\\|x[xy]\\|y[sy]\\|zz\\)\\|t\\(?:a\\(?:b\\(?:_pnt\\|le\\(?:_size\\)?\\)\\|n\\)\\|e\\(?:mperature\\|n\\(?:flg\\|sion\\)\\)\\|flow\\|h\\(?:dt\\|e\\(?:n\\|rmal\\|ta\\)\\|t\\(?:del\\|ime\\)\\)\\|itle\\|olerance\\|rac\\(?:_pnt\\|k\\)\\|ype\\)\\|u\\(?:biquitous\\|cs\\|d\\(?:coe\\|m_pnt\\)\\|mul\\|n\\(?:b\\(?:al\\|flow\\)\\|mark\\)\\|rand\\)\\|v\\(?:_n\\(?:gw\\|mech\\|therm\\)\\|ector\\|g\\(?:a\\|p\\(?:0\\|c\\(?:n?w\\)\\)\\)\\|is\\(?:cous\\|rat\\)\\|ol_strain\\|s\\(?:x[xz]\\|yy\\|zz\\|[ir]\\)?\\)\\|w\\(?:ater\\|b\\(?:iot\\|ulk\\)\\|dens\\|hile\\(?:_?stepping\\)?\\|i\\(?:ndow\\|pp\\)\\|k\\(?:1[12]\\|22\\)\\|rite\\)\\|x\\(?:acc\\|body\\|disp\\|f\\(?:low\\|or\\(?:ce\\|m\\)\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\|ywrite\\)\\|y\\(?:acc\\|body\\|disp\\|f\\(?:low\\|orce\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\)\\|z\\(?:_\\(?:copy\\|group\\|hyst\\|model\\|prop\\)\\|art\\|d\\(?:e\\(?:1[12]\\|22\\|33\\)\\|pp\\|rot\\)\\|msmul\\|poros\\|s\\(?:1[12]\\|22\\|33\\|ub\\)\\|t\\(?:e[a-d]\\|s[a-d]\\)\\|visc\\|xbar\\)\\|[rxy]\\)\\>")
-
-(define-generic-mode  'itasca-flac-mode
-  '(";")
-  kw
-  (list
-   (cons flac-fish-functions  'font-lock-type-face)
-   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-	 'font-lock-variable-name-face))
-  '("\\.fdat$")
-  (list (lambda ()
-	  (itasca-setup-mode)
-	  (set (make-local-variable 'mode-name) "FLAC")))
-  "A mode for Itasca FLAC data files")
+(defconst itasca-flac-function-regexp "\\<\\(a\\(?:bs\\|cos\\|n\\(?:d\\|gle\\|isotropic\\)\\|pp\\(?:_pnt\\|gw_pnt\\|ly\\|th_pnt\\)\\|r\\(?:ea\\|ray\\)\\|s\\(?:in\\|pect\\|x[xy]\\|yy\\|zz\\)\\|t\\(?:an2?\\|t\\(?:_pnt\\|ach\\)\\)\\|[34]\\)\\|b\\(?:a\\(?:ck\\|ud\\)\\|icoe\\|s\\(?:x[xy]\\|yy\\|zz\\)\\)\\|c\\(?:a\\(?:ll\\|se\\(?:_?of\\)?\\)\\|f_\\(?:axi\\|creep\\|dyn\\|ext\\|gw\\|ps\\|therm\\)\\|ga\\|har\\|lo\\(?:ck\\|se\\)\\|m_max\\|o\\(?:lumns\\|mmand\\|n\\(?:fig\\|stitutive\\(?:_?model\\)\\)\\|s\\)\\|parse\\|r\\(?:dt\\|eep\\|t\\(?:del\\|ime\\)\\)\\|s\\(?:c\\|x[xy]\\|yy\\|zz\\)\\|ycle\\)\\|d\\(?:a\\(?:mp\\(?:ing\\)?\\|tum\\)\\|e\\(?:fine\\|grad\\|nsity\\)\\|o_update\\|s\\(?:x[xy]\\|yy\\|zz\\)\\|ump\\|y\\(?:_state\\|dt\\(?:_gp[ij]\\)?\\|namic\\|t\\(?:del\\|ime\\)\\)\\|[ty]\\)\\|e\\(?:_p\\|cho\\|ga\\|l\\(?:astic\\|se\\)\\|nd\\(?:_\\(?:c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)\\|c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)?\\|rror\\|v_\\(?:p\\|tot\\)\\|x\\(?:it\\|p\\)\\)\\|f\\(?:2mod\\|_prop\\|c_arg\\|i\\(?:lcolor\\|sh\\(?:_msg\\|call\\)?\\|x\\)\\|l\\(?:ags\\|o\\(?:at\\|w\\)\\|prop\\)\\|m\\(?:em\\|od\\)\\|o\\(?:b[lu]\\|rce\\|s\\(?:_f\\)?\\)\\|r\\(?:ee\\|iend\\)\\|s\\(?:tring\\|[ir]\\)\\|tens\\)\\|g\\(?:2flow\\|e\\(?:n\\|t_mem\\)\\|flow\\|msmul\\|p\\(?:_copy\\|p\\)\\|r\\(?:\\(?:an\\|i\\)d\\)\\|w\\(?:dt\\|t\\(?:del\\|ime\\)\\)\\)\\|h\\(?:b[ms]\\|elp\\|is\\(?:file\\)?\\)\\|i\\(?:e\\(?:b\\(?:_pnt\\)?\\|rr\\)\\|face\\|gp\\|m\\(?:em\\|plicit\\)\\|n\\(?:formation\\|i\\(?:\\(?:mode\\|tia\\)l\\)\\|t\\(?:_pnt\\|erface\\)?\\)\\|tasca\\|zones\\|[fn]\\)\\|j\\(?:err\\|gp\\|zones\\)\\|l\\(?:arge\\|egend\\|ff_pnt\\|i\\(?:mits\\|st\\)\\|mul\\|n\\|o\\(?:g\\|op\\|se_mem\\)\\)\\|m\\(?:a\\(?:rk\\|t_\\(?:\\(?:inver\\|transpo\\)se\\)\\|x\\(?:dt\\)?\\)\\|e\\(?:chanical\\|m\\(?:ory\\)?\\|ssage\\)\\|in\\(?:dt\\)?\\|o\\(?:del?\\|hr-coulomb\\|\\(?:nchrom\\|vi\\)e\\)\\)\\|n\\(?:c\\(?:ontours\\|write\\)\\|e\\(?:rr\\(?:_fish\\)?\\|w\\)\\|grwater\\|mechanical\\|ot\\|step\\|thermal\\|ull\\|wgpp\\)\\|o\\(?:pen\\|r\\|ut\\)\\|p\\(?:_stress\\|a\\(?:c\\|\\(?:lett\\|[ru]s\\)e\\)\\|fast\\|l\\(?:ot\\|t\\(?:angle\\|\\(?:cohes\\|frict\\|tens\\)ion\\)\\)\\|o\\(?:ro2\\|wer\\)\\|r\\(?:e\\(?:_?parse\\)\\|int\\|op\\)\\|slow\\|[ip]\\)\\|quit\\|r\\(?:_integrate\\|a\\(?:nge\\|yleigh\\)\\|e\\(?:ad\\|s\\(?:et\\|tore\\)\\|turn\\|z_exe\\)\\|\\(?:ff_pn\\|sa\\)t\\)\\|s\\(?:_\\(?:3dd\\|dyn\\|echo\\|flow\\|imp\\|log\\|m\\(?:e\\(?:ch\\|ss\\)\\|ovie\\)\\|therm\\)\\|a\\(?:t\\|ve\\)\\|cl\\(?:in\\|ose\\)\\|e\\(?:ction\\|t\\)\\|gn\\|i\\(?:g[12]\\|n\\)\\|m\\(?:_max\\|all\\)\\|o\\(?:lve\\|pen\\)\\|qrt\\|read\\|s\\(?:[ir]3d\\|[ir]\\)?\\|t\\(?:ate\\|ep\\|op\\|r\\(?:_pnt\\|ing\\|ucture\\)\\)\\|write\\|x[xy]\\|y[sy]\\|zz\\)\\|t\\(?:a\\(?:b\\(?:_pnt\\|le\\(?:_size\\)?\\)\\|n\\)\\|e\\(?:mperature\\|n\\(?:flg\\|sion\\)\\)\\|flow\\|h\\(?:dt\\|e\\(?:n\\|rmal\\|ta\\)\\|t\\(?:del\\|ime\\)\\)\\|itle\\|olerance\\|rac\\(?:_pnt\\|k\\)\\|ype\\)\\|u\\(?:biquitous\\|cs\\|d\\(?:coe\\|m_pnt\\)\\|mul\\|n\\(?:b\\(?:al\\|flow\\)\\|mark\\)\\|rand\\)\\|v\\(?:_n\\(?:gw\\|mech\\|therm\\)\\|ector\\|g\\(?:a\\|p\\(?:0\\|c\\(?:n?w\\)\\)\\)\\|is\\(?:cous\\|rat\\)\\|ol_strain\\|s\\(?:x[xz]\\|yy\\|zz\\|[ir]\\)?\\)\\|w\\(?:ater\\|b\\(?:iot\\|ulk\\)\\|dens\\|hile\\(?:_?stepping\\)?\\|i\\(?:ndow\\|pp\\)\\|k\\(?:1[12]\\|22\\)\\|rite\\)\\|x\\(?:acc\\|body\\|disp\\|f\\(?:low\\|or\\(?:ce\\|m\\)\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\|ywrite\\)\\|y\\(?:acc\\|body\\|disp\\|f\\(?:low\\|orce\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\)\\|z\\(?:_\\(?:copy\\|group\\|hyst\\|model\\|prop\\)\\|art\\|d\\(?:e\\(?:1[12]\\|22\\|33\\)\\|pp\\|rot\\)\\|msmul\\|poros\\|s\\(?:1[12]\\|22\\|33\\|ub\\)\\|t\\(?:e[a-d]\\|s[a-d]\\)\\|visc\\|xbar\\)\\|[rxy]\\)\\>")
 
 ;; FLAC3D specific
 
-(defconst flac3d-fish-functions
+(defconst itasca-flac3d-function-list
 "at_pos at_slave at_type at_master at_masterzn
 at_zoneface at_delete at_weight at_qweight at_snap at_create
 
@@ -423,45 +315,7 @@ z_findface z_linkzone z_linkindex z_apply z_iecreate
 z_qualitytest z_facegroup z_faceextra z_faceremovegroup
 z_faceingroup")
 
-(defconst flac3d-functions
-      (regexp-opt (cl-mapcan #'split-string
-                          (list
-                           vector-functions
-                           string-functions
-                           math-functions
-                           table-functions
-                           mem-functions
-                           general-functions
-                           io-functions
-                           uds-functions
-                           label-functions
-                           mail-functions
-                           gset-functions
-                           dfn-functions
-                           dfrac-functions
-                           dvert-functions
-                           di-functions
-                           dtp-functions
-                           flac3d-fish-functions )) 'words))
-
-
-(define-generic-mode  'itasca-flac3d-mode
-  '(";")
-  kw
-  (list (cons flac3d-functions 'font-lock-type-face)
-        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-              'font-lock-variable-name-face))
-  '("\\.f3dat$")
-  (list (lambda ()
-	  (itasca-setup-mode)
-	  (set (make-local-variable 'mode-name) "FLAC3D")))
-  "Mode for Itasca FLAC3D data files")
-
-
-
-; udec mode
-
-(defconst itasca-udec-functions "tdel step time xgrav ygrav
+(defconst itasca-udec-function-list "tdel step time xgrav ygrav
 grav_x grav_y block_head contact_head domain_head m_jkn m_jks
 b_next b_x b_y b_xvel b_yvel str_node_head str_elem_head
 cable_node_head cable_elem_head cycle unbal m_jfriction
@@ -490,23 +344,126 @@ bou_xreaction bou_yreactionbou_near z_fsi z_fsr z_density z_biot
 z_group b_group c_group gp_addxmass tgps_head tgps_next tgps_type
 tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 
+;; FISH function lists for each mode
+
+(defconst itasca-general-functions
+  (cl-mapcan #'split-string (list
+			     vector-functions
+			     string-functions
+			     general-functions
+			     math-functions
+			     table-functions
+			     mem-functions
+			     io-functions )))
+(defconst itasca-general-function-regexp
+  (regexp-opt itasca-general-functions))
+
+(defconst itasca-pfc-functions
+  (cl-mapcan #'split-string
+	     (list
+	      vector-functions
+	      string-functions
+	      math-functions
+	      table-functions
+	      mem-functions
+	      general-functions
+	      io-functions
+	      itasca-pfc-function-list)))
+(defconst itasca-pfc-function-regexp
+  (regexp-opt itasca-pfc-functions 'word))
+
+(defconst itasca-flac3d-functions
+  (cl-mapcan #'split-string
+	     (list
+	      vector-functions
+	      string-functions
+	      math-functions
+	      table-functions
+	      mem-functions
+	      general-functions
+	      io-functions
+	      uds-functions
+	      label-functions
+	      mail-functions
+	      gset-functions
+	      dfn-functions
+	      dfrac-functions
+	      dvert-functions
+	      di-functions
+	      dtp-functions
+	      itasca-flac3d-function-list)))
+(defconst itasca-flac3d-function-regexp
+  (regexp-opt itasca-flac3d-functions 'words))
 
 (defconst itasca-udec-functions
-      (regexp-opt (cl-mapcan #'split-string
-                          (list
-                           vector-functions
-                           string-functions
-                           math-functions
-                           table-functions
-                           mem-functions
-                           general-functions
-                           io-functions
-                           itasca-udec-functions )) 'words))
+  (cl-mapcan #'split-string
+	     (list
+	      vector-functions
+	      string-functions
+	      math-functions
+	      table-functions
+	      mem-functions
+	      general-functions
+	      io-functions
+	      itasca-udec-function-list )))
+(defconst itasca-udec-function-regexp
+  (regexp-opt itasca-udec-functions 'words))
+
+; define the modes
+
+(define-generic-mode 'itasca-general-mode
+  '(";")
+  itasca-mode-keywords
+  (list (cons itasca-general-function-regexp 'font-lock-type-face)
+        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+              'font-lock-variable-name-face))
+  '("\\.dat$" "\\.fis$" "\\.fin$")
+  (list (lambda ()
+	  (itasca-setup-mode)
+	  (set (make-local-variable 'mode-name) "Itasca")))
+  "Mode for Itasca data files (not code specific)")
+
+(define-generic-mode  'itasca-pfc-mode
+  '(";")
+  itasca-mode-keywords
+  (list (cons itasca-pfc-function-regexp 'font-lock-type-face)
+        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+              'font-lock-variable-name-face))
+  '("\\.p3dat$" "\\.p2dat")
+  (list (lambda ()
+	  (itasca-setup-mode)
+	  (set (make-local-variable 'mode-name) "PFC")))
+  "Mode for Itasca PFC 4.0  data files")
+
+(define-generic-mode  'itasca-flac-mode
+  '(";")
+  itasca-mode-keywords
+  (list
+   (cons itasca-flac-function-regexp 'font-lock-type-face)
+   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+	 'font-lock-variable-name-face))
+  '("\\.fdat$")
+  (list (lambda ()
+	  (itasca-setup-mode)
+	  (set (make-local-variable 'mode-name) "FLAC")))
+  "A mode for Itasca FLAC data files")
+
+(define-generic-mode  'itasca-flac3d-mode
+  '(";")
+  itasca-mode-keywords
+  (list (cons itasca-flac3d-function-regexp 'font-lock-type-face)
+        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+              'font-lock-variable-name-face))
+  '("\\.f3dat$")
+  (list (lambda ()
+	  (itasca-setup-mode)
+	  (set (make-local-variable 'mode-name) "FLAC3D")))
+  "Mode for Itasca FLAC3D data files")
 
 (define-generic-mode  'itasca-udec-mode
   '(";")
-  kw
-  (list (cons itasca-udec-functions 'font-lock-type-face)
+  itasca-mode-keywords
+  (list (cons itasca-udec-function-regexp 'font-lock-type-face)
 	(cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
 	      'font-lock-variable-name-face))
   '("\\.udat$")
@@ -523,6 +480,43 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
  ;;   (process-send-string "*udec-output*" (format "call %s\n"(buffer-file-name))))
  ;; (defun end-udec () (interactive)
  ;;   (delete-process udec-process))
+
+;; major mode support functions
+
+(defun fish-indent-line ()
+  "Indent current line as FISH code"
+  (interactive)
+  (beginning-of-line)
+  (let ((re-kw-up "^[ \t]*\\(def\\|define\\|loop\\|command\\|if\\|case_of\\|caseof\\|section\\|case\\|else\\)")
+	(re-kw-down "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\|case\\|else\\)")
+	(re-kw-down2 "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\)"))
+   (if (bobp)
+       (indent-line-to 0)
+     (let ((not-indented t) (indent-width 2) cur-indent)
+       (if (looking-at re-kw-down)
+	   (progn
+	     (save-excursion
+	       (forward-line -1)
+	       (setq cur-indent (- (current-indentation) indent-width)))
+	     (if (< cur-indent 0)
+		 (setq cur-indent 0)))
+	 (save-excursion
+	   (while not-indented
+
+	     (forward-line -1)
+	     (if (looking-at re-kw-down2)
+		 (progn
+		   (setq cur-indent (current-indentation))
+		   (setq not-indented nil))
+	       (if (looking-at re-kw-up)
+		   (progn
+		     (setq cur-indent (+ (current-indentation) indent-width))
+		     (setq not-indented nil))
+		 (if (bobp)
+		     (setq not-indented nil)))))))
+       (if cur-indent
+	   (indent-line-to cur-indent)
+	 (indent-line-to 0))))))
 
 (defconst itasca-defun-start-regexp "^\s*def\s+\\([a-z_]+\\)")
 (defconst itasca-defun-end-regexp "^ *end\\( +\\|;+\\|$\\)")
@@ -551,6 +545,10 @@ of the next FISH function definition"
 	      (not (eobp)))
     (next-line) (beginning-of-line)))
 
+(defun itasca-change-syntax-table ()
+  (modify-syntax-entry ?_ "w")
+  (modify-syntax-entry ?' "\""))
+
 (defun itasca-setup-mode ()
   "set buffer local variables for itasca modes"
   (interactive)
@@ -565,6 +563,7 @@ of the next FISH function definition"
        #'itasca-end-of-defun-function)
   (itasca-change-syntax-table))
 
+;;; tests
 
 (defvar itasca-test-fish-code "; a comment
 
