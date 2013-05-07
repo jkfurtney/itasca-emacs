@@ -18,93 +18,86 @@ endcommand end_if endif end_case endcase end_section endsection
 case else array local global argument while null then
 while_stepping whilestepping exit")
 
-(defconst vector-functions "vector xcomp ycomp zcomp cross dot unit")
+(defconst itasca-general-functions "array_dim array_size
+buildstr char clock code_majorversion code_minorversion code_name
+ddfromnorm dipfromnorm environment error fc_arg find_range
+fish_majorversion fish_minorversion float from_principal
+get_array in in_range inbox index index_type input int lose_array
+msgbox normfromdip normfromdipdd notify null out pointer_type
+principal_stress realtime sleep string strlen substr tolower
+toupper type
 
-(defconst string-functions "buildstr char float input int output parse
-pre_parse string strlen substr")
+vector xcomp ycomp zcomp cross dot unit buildstr char float input
+int output parse pre_parse string strlen substr abs acos and asin
+atan atan2 cos degrad exp grand ln log lshift mag mag2 max min
+not or pi round rshift sgn sin sqrt tan urand
 
-(defconst math-functions "abs acos and asin atan atan2 cos degrad exp
-grand ln log lshift mag mag2 max min not or pi round rshift sgn
-sin sqrt tan urand")
+write read close open sopen swrite sclose
+xmlparse get_socket lose_socket sread
 
-(defconst general-functions "array_dim array_size buildstr char clock
-code_majorversion code_minorversion code_name ddfromnorm
-dipfromnorm environment error fc_arg find_range fish_majorversion
-fish_minorversion float from_principal get_array in in_range
-inbox index index_type input int lose_array msgbox normfromdip
-normfromdipdd notify null out pointer_type principal_stress
-realtime sleep string strlen substr tolower toupper type")
+del_table get_table table table_id
+table_name table_size vtable xtable ytable
 
-(defconst io-functions "write read close open sopen swrite sclose
-xmlparse get_socket lose_socket sread")
-
-(defconst table-functions "del_table get_table table table_id
-table_name table_size vtable xtable ytable")
-
-(defconst mem-functions "get_mem lose_mem mem")
+get_mem lose_mem mem")
 
 ;; new in FLAC3D 5.0
-(defconst uds-functions "uds_list uds_head uds_next uds_find uds_near
-uds_create uds_id uds_group uds_isgroup uds_removegroup uds_extra
-uds_pos uds_remove uds_value udv_list udv_head udv_next udv_find
-udv_near udv_create udv_id udv_group udv_isgroup udv_removegroup
-udv_extra udv_pos udv_value udv_mag udv_dip udv_dd udv_dir
-udv_remove udt_list udt_head udt_next udt_find udt_near
-udt_create udt_id udt_group udt_isgroup udt_removegroup udt_extra
-udt_pos udt_value udt_prin udt_setdir udt_remove")
+(defconst itasca-new-framework-functions "uds_list uds_head
+uds_next uds_find uds_near uds_create uds_id uds_group
+uds_isgroup uds_removegroup uds_extra uds_pos uds_remove
+uds_value udv_list udv_head udv_next udv_find udv_near udv_create
+udv_id udv_group udv_isgroup udv_removegroup udv_extra udv_pos
+udv_value udv_mag udv_dip udv_dd udv_dir udv_remove udt_list
+udt_head udt_next udt_find udt_near udt_create udt_id udt_group
+udt_isgroup udt_removegroup udt_extra udt_pos udt_value udt_prin
+udt_setdir udt_remove
 
-(defconst label-functions "label_arrow label_create label_delete
-label_end label_find label_head label_next label_pos label_text")
+label_arrow label_create label_delete
+label_end label_find label_head label_next label_pos label_text
 
-(defconst mail-functions "mail_addattachment mail_addrecipient
-mail_clear mail_deleterecipient mail_deleteattachment mail_send
+mail_addattachment mail_addrecipient mail_clear
+mail_deleterecipient mail_deleteattachment mail_send
 mail_setaccount mail_setbody mail_setdomain mail_sethost
-mail_setpassword mail_setsubject")
+mail_setpassword mail_setsubject
 
-(defconst gset-functions "gset_find gset_create gset_list gset_remove
-gset_id gset_name gn_find gn_near gn_create gn_list gn_remove
-gn_id gn_group yes gn_isgroup gn_groupnum gn_groupex gn_extra yes
-gn_startedge gn_startindex gn_pos yes ge_find ge_near ge_create
-ge_list ge_remove ge_id ge_group yes ge_isgroup ge_groupnum
-ge_groupex ge_extra yes ge_node ge_nextedge ge_nextindex
-ge_startpoly ge_startindex ge_dir ge_pos yes ge_cen gpol_find
-gpol_near gpol_create gpol_addedge gpol_addnode gpol_close
-gpol_check gpol_list gpol_remove gpol_id gpol_group yes
-gpol_isgroup gpol_extra yes gpol_size gpol_edge gpol_node
-gpol_normal gpol_nextpoly gpol_nextindex gpol_cen gpol_area")
+gset_find gset_create gset_list gset_remove gset_id gset_name
+gn_find gn_near gn_create gn_list gn_remove gn_id gn_group yes
+gn_isgroup gn_groupnum gn_groupex gn_extra yes gn_startedge
+gn_startindex gn_pos yes ge_find ge_near ge_create ge_list
+ge_remove ge_id ge_group yes ge_isgroup ge_groupnum ge_groupex
+ge_extra yes ge_node ge_nextedge ge_nextindex ge_startpoly
+ge_startindex ge_dir ge_pos yes ge_cen gpol_find gpol_near
+gpol_create gpol_addedge gpol_addnode gpol_close gpol_check
+gpol_list gpol_remove gpol_id gpol_group yes gpol_isgroup
+gpol_extra yes gpol_size gpol_edge gpol_node gpol_normal
+gpol_nextpoly gpol_nextindex gpol_cen gpol_area
 
-(defconst dfn-functions "dfn_list dfn_find dfn_typeid dfn_typename
-dfn_p10 dfn_p10geom dfn_p20 dfn_p21 dfn_avetrace dfn_number
-dfn_delete dfn_add dfn_id dfn_flist dfn_ilist dfn_finbox
-dfn_carray dfn_dcenter dfn_density dfn_percolation")
+dfn_list dfn_find dfn_typeid dfn_typename dfn_p10 dfn_p10geom
+dfn_p20 dfn_p21 dfn_avetrace dfn_number dfn_delete dfn_add dfn_id
+dfn_flist dfn_ilist dfn_finbox dfn_carray dfn_dcenter dfn_density
+dfn_percolation
 
-(defconst dfrac-functions "dfrac_find dfrac_near dfrac_typeid
-dfrac_typename dfrac_remove dfrac_disk dfrac_prop dfrac_carray
-dfrac_iarray dfrac_varray dfrac_radius dfrac_pos dfrac_dip
-dfrac_dipd dfrac_normal dfrac_area dfrac_extra dfrac_group
-dfrac_number dfrac_id dfrac_pnear dfrac_dfn dfrac_isgroup
-dfrac_removegroup")
+dfrac_find dfrac_near dfrac_typeid dfrac_typename dfrac_remove
+dfrac_disk dfrac_prop dfrac_carray dfrac_iarray dfrac_varray
+dfrac_radius dfrac_pos dfrac_dip dfrac_dipd dfrac_normal
+dfrac_area dfrac_extra dfrac_group dfrac_number dfrac_id
+dfrac_pnear dfrac_dfn dfrac_isgroup dfrac_removegroup
 
-(defconst dvert-functions "dvert_find dvert_typeid dvert_typename
-dvert_id dvert_pos")
+dvert_find dvert_typeid dvert_typename dvert_id dvert_pos
 
-(defconst di-functions "di_find di_typeid di_typename di_end1 di_end2
-di_pos1 di_pos2")
+di_find di_typeid di_typename di_end1 di_end2 di_pos1 di_pos2
 
-(defconst dtp-functions "dtp_list dtp_find dtp_get dtp_id
-dtp_name dtp_stype dtp_snbp dtp_sparam dtp_smin dtp_smax
-dtp_otype dtp_onbp dtp_oparam dtp_dmin dtp_dmax dtp_ddmin
-dtp_ddmax dtp_ptype dtp_pnbp dtp_pparam dtp_pmin dtp_pmax")
+dtp_list dtp_find dtp_get dtp_id dtp_name dtp_stype dtp_snbp
+dtp_sparam dtp_smin dtp_smax dtp_otype dtp_onbp dtp_oparam
+dtp_dmin dtp_dmax dtp_ddmin dtp_ddmax dtp_ptype dtp_pnbp
+dtp_pparam dtp_pmin dtp_pmax")
 
-;; pfc 4.0 specific
-
-(defconst itasca-pfc-function-list
-"ccfd_nele ccfd_nnode ccfd_elenode ccfd_xnode ccfd_ynode
-ccfd_znode ccfd_por ccfd_xvel ccfd_yvel ccfd_zvel ccfd_xdrag
-ccfd_ydrag ccfd_zdrag ccfd_t_s ccfd_fite ccfd_xgradp ccfd_ygradp
-ccfd_zgradp ccfd_elevol ccfd_xelecent ccfd_yelecent ccfd_zelecent
-ccfd_xyzele ccfd_ballele ccfd_fint ccfd_xballff ccfd_yballff
-ccfd_zballff ccfd_elemu ccfd_elerho ccfd_elepress
+(defconst itasca-pfc-functions "ccfd_nele ccfd_nnode
+ccfd_elenode ccfd_xnode ccfd_ynode ccfd_znode ccfd_por ccfd_xvel
+ccfd_yvel ccfd_zvel ccfd_xdrag ccfd_ydrag ccfd_zdrag ccfd_t_s
+ccfd_fite ccfd_xgradp ccfd_ygradp ccfd_zgradp ccfd_elevol
+ccfd_xelecent ccfd_yelecent ccfd_zelecent ccfd_xyzele
+ccfd_ballele ccfd_fint ccfd_xballff ccfd_yballff ccfd_zballff
+ccfd_elemu ccfd_elerho ccfd_elepress
 
 fc_x fc_y fc_z fc_xvel fc_yvel fc_zvel fc_pre fc_por fc_xfap fc_yfap
 fc_zfap fc_bxvel fc_byvel fc_bzvel fc_temp
@@ -180,14 +173,11 @@ w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
 
 ;; FLAC 7.0 specific
 ;; fix this
-
 (defconst itasca-flac-function-regexp "\\<\\(a\\(?:bs\\|cos\\|n\\(?:d\\|gle\\|isotropic\\)\\|pp\\(?:_pnt\\|gw_pnt\\|ly\\|th_pnt\\)\\|r\\(?:ea\\|ray\\)\\|s\\(?:in\\|pect\\|x[xy]\\|yy\\|zz\\)\\|t\\(?:an2?\\|t\\(?:_pnt\\|ach\\)\\)\\|[34]\\)\\|b\\(?:a\\(?:ck\\|ud\\)\\|icoe\\|s\\(?:x[xy]\\|yy\\|zz\\)\\)\\|c\\(?:a\\(?:ll\\|se\\(?:_?of\\)?\\)\\|f_\\(?:axi\\|creep\\|dyn\\|ext\\|gw\\|ps\\|therm\\)\\|ga\\|har\\|lo\\(?:ck\\|se\\)\\|m_max\\|o\\(?:lumns\\|mmand\\|n\\(?:fig\\|stitutive\\(?:_?model\\)\\)\\|s\\)\\|parse\\|r\\(?:dt\\|eep\\|t\\(?:del\\|ime\\)\\)\\|s\\(?:c\\|x[xy]\\|yy\\|zz\\)\\|ycle\\)\\|d\\(?:a\\(?:mp\\(?:ing\\)?\\|tum\\)\\|e\\(?:fine\\|grad\\|nsity\\)\\|o_update\\|s\\(?:x[xy]\\|yy\\|zz\\)\\|ump\\|y\\(?:_state\\|dt\\(?:_gp[ij]\\)?\\|namic\\|t\\(?:del\\|ime\\)\\)\\|[ty]\\)\\|e\\(?:_p\\|cho\\|ga\\|l\\(?:astic\\|se\\)\\|nd\\(?:_\\(?:c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)\\|c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)?\\|rror\\|v_\\(?:p\\|tot\\)\\|x\\(?:it\\|p\\)\\)\\|f\\(?:2mod\\|_prop\\|c_arg\\|i\\(?:lcolor\\|sh\\(?:_msg\\|call\\)?\\|x\\)\\|l\\(?:ags\\|o\\(?:at\\|w\\)\\|prop\\)\\|m\\(?:em\\|od\\)\\|o\\(?:b[lu]\\|rce\\|s\\(?:_f\\)?\\)\\|r\\(?:ee\\|iend\\)\\|s\\(?:tring\\|[ir]\\)\\|tens\\)\\|g\\(?:2flow\\|e\\(?:n\\|t_mem\\)\\|flow\\|msmul\\|p\\(?:_copy\\|p\\)\\|r\\(?:\\(?:an\\|i\\)d\\)\\|w\\(?:dt\\|t\\(?:del\\|ime\\)\\)\\)\\|h\\(?:b[ms]\\|elp\\|is\\(?:file\\)?\\)\\|i\\(?:e\\(?:b\\(?:_pnt\\)?\\|rr\\)\\|face\\|gp\\|m\\(?:em\\|plicit\\)\\|n\\(?:formation\\|i\\(?:\\(?:mode\\|tia\\)l\\)\\|t\\(?:_pnt\\|erface\\)?\\)\\|tasca\\|zones\\|[fn]\\)\\|j\\(?:err\\|gp\\|zones\\)\\|l\\(?:arge\\|egend\\|ff_pnt\\|i\\(?:mits\\|st\\)\\|mul\\|n\\|o\\(?:g\\|op\\|se_mem\\)\\)\\|m\\(?:a\\(?:rk\\|t_\\(?:\\(?:inver\\|transpo\\)se\\)\\|x\\(?:dt\\)?\\)\\|e\\(?:chanical\\|m\\(?:ory\\)?\\|ssage\\)\\|in\\(?:dt\\)?\\|o\\(?:del?\\|hr-coulomb\\|\\(?:nchrom\\|vi\\)e\\)\\)\\|n\\(?:c\\(?:ontours\\|write\\)\\|e\\(?:rr\\(?:_fish\\)?\\|w\\)\\|grwater\\|mechanical\\|ot\\|step\\|thermal\\|ull\\|wgpp\\)\\|o\\(?:pen\\|r\\|ut\\)\\|p\\(?:_stress\\|a\\(?:c\\|\\(?:lett\\|[ru]s\\)e\\)\\|fast\\|l\\(?:ot\\|t\\(?:angle\\|\\(?:cohes\\|frict\\|tens\\)ion\\)\\)\\|o\\(?:ro2\\|wer\\)\\|r\\(?:e\\(?:_?parse\\)\\|int\\|op\\)\\|slow\\|[ip]\\)\\|quit\\|r\\(?:_integrate\\|a\\(?:nge\\|yleigh\\)\\|e\\(?:ad\\|s\\(?:et\\|tore\\)\\|turn\\|z_exe\\)\\|\\(?:ff_pn\\|sa\\)t\\)\\|s\\(?:_\\(?:3dd\\|dyn\\|echo\\|flow\\|imp\\|log\\|m\\(?:e\\(?:ch\\|ss\\)\\|ovie\\)\\|therm\\)\\|a\\(?:t\\|ve\\)\\|cl\\(?:in\\|ose\\)\\|e\\(?:ction\\|t\\)\\|gn\\|i\\(?:g[12]\\|n\\)\\|m\\(?:_max\\|all\\)\\|o\\(?:lve\\|pen\\)\\|qrt\\|read\\|s\\(?:[ir]3d\\|[ir]\\)?\\|t\\(?:ate\\|ep\\|op\\|r\\(?:_pnt\\|ing\\|ucture\\)\\)\\|write\\|x[xy]\\|y[sy]\\|zz\\)\\|t\\(?:a\\(?:b\\(?:_pnt\\|le\\(?:_size\\)?\\)\\|n\\)\\|e\\(?:mperature\\|n\\(?:flg\\|sion\\)\\)\\|flow\\|h\\(?:dt\\|e\\(?:n\\|rmal\\|ta\\)\\|t\\(?:del\\|ime\\)\\)\\|itle\\|olerance\\|rac\\(?:_pnt\\|k\\)\\|ype\\)\\|u\\(?:biquitous\\|cs\\|d\\(?:coe\\|m_pnt\\)\\|mul\\|n\\(?:b\\(?:al\\|flow\\)\\|mark\\)\\|rand\\)\\|v\\(?:_n\\(?:gw\\|mech\\|therm\\)\\|ector\\|g\\(?:a\\|p\\(?:0\\|c\\(?:n?w\\)\\)\\)\\|is\\(?:cous\\|rat\\)\\|ol_strain\\|s\\(?:x[xz]\\|yy\\|zz\\|[ir]\\)?\\)\\|w\\(?:ater\\|b\\(?:iot\\|ulk\\)\\|dens\\|hile\\(?:_?stepping\\)?\\|i\\(?:ndow\\|pp\\)\\|k\\(?:1[12]\\|22\\)\\|rite\\)\\|x\\(?:acc\\|body\\|disp\\|f\\(?:low\\|or\\(?:ce\\|m\\)\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\|ywrite\\)\\|y\\(?:acc\\|body\\|disp\\|f\\(?:low\\|orce\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\)\\|z\\(?:_\\(?:copy\\|group\\|hyst\\|model\\|prop\\)\\|art\\|d\\(?:e\\(?:1[12]\\|22\\|33\\)\\|pp\\|rot\\)\\|msmul\\|poros\\|s\\(?:1[12]\\|22\\|33\\|ub\\)\\|t\\(?:e[a-d]\\|s[a-d]\\)\\|visc\\|xbar\\)\\|[rxy]\\)\\>")
 
-;; FLAC3D specific
-
-(defconst itasca-flac3d-function-list
-"at_pos at_slave at_type at_master at_masterzn
-at_zoneface at_delete at_weight at_qweight at_snap at_create
+(defconst itasca-flac3d-functions "at_pos at_slave at_type
+at_master at_masterzn at_zoneface at_delete at_weight at_qweight
+at_snap at_create
 
 exb_id exb_check exb_group exb_isgroup exb_groupnum
 exb_removegroup exb_extra exb_size exb_block exb_edge exb_flip
@@ -315,7 +305,7 @@ z_findface z_linkzone z_linkindex z_apply z_iecreate
 z_qualitytest z_facegroup z_faceextra z_faceremovegroup
 z_faceingroup")
 
-(defconst itasca-udec-function-list "tdel step time xgrav ygrav
+(defconst itasca-udec-functions "tdel step time xgrav ygrav
 grav_x grav_y block_head contact_head domain_head m_jkn m_jks
 b_next b_x b_y b_xvel b_yvel str_node_head str_elem_head
 cable_node_head cable_elem_head cycle unbal m_jfriction
@@ -345,75 +335,40 @@ z_group b_group c_group gp_addxmass tgps_head tgps_next tgps_type
 tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 
 ;; FISH function lists for each mode
+(defconst itasca-mode-keyword-list
+  (split-string itasca-mode-keywords))
 
-(defconst itasca-general-functions
-  (cl-mapcan #'split-string (list
-			     vector-functions
-			     string-functions
-			     general-functions
-			     math-functions
-			     table-functions
-			     mem-functions
-			     io-functions )))
+(defconst itasca-general-function-list
+  (cl-mapcan #'split-string
+	     (list itasca-general-functions)))
 (defconst itasca-general-function-regexp
-  (regexp-opt itasca-general-functions))
+  (regexp-opt itasca-general-function-list 'words))
 
-(defconst itasca-pfc-functions
+(defconst itasca-pfc-function-list
   (cl-mapcan #'split-string
-	     (list
-	      vector-functions
-	      string-functions
-	      math-functions
-	      table-functions
-	      mem-functions
-	      general-functions
-	      io-functions
-	      itasca-pfc-function-list)))
+	     (list itasca-general-functions itasca-pfc-functions)))
 (defconst itasca-pfc-function-regexp
-  (regexp-opt itasca-pfc-functions 'word))
+  (regexp-opt itasca-pfc-function-list 'words))
 
-(defconst itasca-flac3d-functions
+; fix the FLAC one
+
+(defconst itasca-flac3d-function-list
   (cl-mapcan #'split-string
-	     (list
-	      vector-functions
-	      string-functions
-	      math-functions
-	      table-functions
-	      mem-functions
-	      general-functions
-	      io-functions
-	      uds-functions
-	      label-functions
-	      mail-functions
-	      gset-functions
-	      dfn-functions
-	      dfrac-functions
-	      dvert-functions
-	      di-functions
-	      dtp-functions
-	      itasca-flac3d-function-list)))
+	     (list itasca-general-functions itasca-new-framework-functions
+		   itasca-flac3d-functions)))
 (defconst itasca-flac3d-function-regexp
-  (regexp-opt itasca-flac3d-functions 'words))
+  (regexp-opt itasca-flac3d-function-list 'words))
 
-(defconst itasca-udec-functions
+(defconst itasca-udec-function-list
   (cl-mapcan #'split-string
-	     (list
-	      vector-functions
-	      string-functions
-	      math-functions
-	      table-functions
-	      mem-functions
-	      general-functions
-	      io-functions
-	      itasca-udec-function-list )))
+	     (list itasca-general-functions itasca-udec-functions)))
 (defconst itasca-udec-function-regexp
-  (regexp-opt itasca-udec-functions 'words))
+  (regexp-opt itasca-udec-function-list 'words))
 
 ; define the modes
-
 (define-generic-mode 'itasca-general-mode
   '(";")
-  itasca-mode-keywords
+  itasca-mode-keyword-list
   (list (cons itasca-general-function-regexp 'font-lock-type-face)
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
@@ -425,7 +380,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 
 (define-generic-mode  'itasca-pfc-mode
   '(";")
-  itasca-mode-keywords
+  itasca-mode-keyword-list
   (list (cons itasca-pfc-function-regexp 'font-lock-type-face)
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
@@ -437,7 +392,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 
 (define-generic-mode  'itasca-flac-mode
   '(";")
-  itasca-mode-keywords
+  itasca-mode-keyword-list
   (list
    (cons itasca-flac-function-regexp 'font-lock-type-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
@@ -450,7 +405,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 
 (define-generic-mode  'itasca-flac3d-mode
   '(";")
-  itasca-mode-keywords
+  itasca-mode-keyword-list
   (list (cons itasca-flac3d-function-regexp 'font-lock-type-face)
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
@@ -462,7 +417,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 
 (define-generic-mode  'itasca-udec-mode
   '(";")
-  itasca-mode-keywords
+  itasca-mode-keyword-list
   (list (cons itasca-udec-function-regexp 'font-lock-type-face)
 	(cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
 	      'font-lock-variable-name-face))
@@ -595,7 +550,7 @@ end;
 
 ")
 
-(ert-deftest test-itasca-defun-nav ()
+(ert-deftest itasca-test-defun-nav ()
   (with-temp-buffer
     (insert itasca-test-fish-code)
     (goto-char (point-max))
@@ -626,5 +581,17 @@ end;
     (let ((current-line (buffer-substring-no-properties
 			 (point) (point-at-eol))))
       (should (equal current-line "end;")))))
+
+(ert-deftest itasca-smoketest ()
+  (with-temp-buffer
+    (itasca-general-mode))
+  (with-temp-buffer
+    (itasca-pfc-mode))
+  (with-temp-buffer
+    (itasca-flac-mode))
+  (with-temp-buffer
+    (itasca-flac3d-mode))
+  (with-temp-buffer
+    (itasca-udec-mode)))
 
 (provide 'itasca)
