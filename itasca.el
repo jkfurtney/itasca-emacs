@@ -340,13 +340,13 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 
 (defconst itasca-general-function-list
   (cl-mapcan #'split-string
-	     (list itasca-general-functions)))
+             (list itasca-general-functions)))
 (defconst itasca-general-function-regexp
   (regexp-opt itasca-general-function-list 'words))
 
 (defconst itasca-pfc-function-list
   (cl-mapcan #'split-string
-	     (list itasca-general-functions itasca-pfc-functions)))
+             (list itasca-general-functions itasca-pfc-functions)))
 (defconst itasca-pfc-function-regexp
   (regexp-opt itasca-pfc-function-list 'words))
 
@@ -354,14 +354,14 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 
 (defconst itasca-flac3d-function-list
   (cl-mapcan #'split-string
-	     (list itasca-general-functions itasca-new-framework-functions
-		   itasca-flac3d-functions)))
+             (list itasca-general-functions itasca-new-framework-functions
+                   itasca-flac3d-functions)))
 (defconst itasca-flac3d-function-regexp
   (regexp-opt itasca-flac3d-function-list 'words))
 
 (defconst itasca-udec-function-list
   (cl-mapcan #'split-string
-	     (list itasca-general-functions itasca-udec-functions)))
+             (list itasca-general-functions itasca-udec-functions)))
 (defconst itasca-udec-function-regexp
   (regexp-opt itasca-udec-function-list 'words))
 
@@ -374,8 +374,8 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
               'font-lock-variable-name-face))
   '("\\.dat$" "\\.fis$" "\\.fin$")
   (list (lambda ()
-	  (itasca-setup-mode)
-	  (set (make-local-variable 'mode-name) "Itasca")))
+          (itasca-setup-mode)
+          (set (make-local-variable 'mode-name) "Itasca")))
   "Mode for Itasca data files (not code specific)")
 
 (define-generic-mode  'itasca-pfc-mode
@@ -386,8 +386,8 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
               'font-lock-variable-name-face))
   '("\\.p3dat$" "\\.p2dat")
   (list (lambda ()
-	  (itasca-setup-mode)
-	  (set (make-local-variable 'mode-name) "PFC")))
+          (itasca-setup-mode)
+          (set (make-local-variable 'mode-name) "PFC")))
   "Mode for Itasca PFC 4.0  data files")
 
 (define-generic-mode  'itasca-flac-mode
@@ -396,11 +396,11 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list
    (cons itasca-flac-function-regexp 'font-lock-type-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-	 'font-lock-variable-name-face))
+         'font-lock-variable-name-face))
   '("\\.fdat$")
   (list (lambda ()
-	  (itasca-setup-mode)
-	  (set (make-local-variable 'mode-name) "FLAC")))
+          (itasca-setup-mode)
+          (set (make-local-variable 'mode-name) "FLAC")))
   "A mode for Itasca FLAC data files")
 
 (define-generic-mode  'itasca-flac3d-mode
@@ -411,30 +411,32 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
               'font-lock-variable-name-face))
   '("\\.f3dat$")
   (list (lambda ()
-	  (itasca-setup-mode)
-	  (set (make-local-variable 'mode-name) "FLAC3D")))
+          (itasca-setup-mode)
+          (set (make-local-variable 'mode-name) "FLAC3D")))
   "Mode for Itasca FLAC3D data files")
 
 (define-generic-mode  'itasca-udec-mode
   '(";")
   itasca-mode-keyword-list
   (list (cons itasca-udec-function-regexp 'font-lock-type-face)
-	(cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-	      'font-lock-variable-name-face))
+        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+              'font-lock-variable-name-face))
   '("\\.udat$")
   (list (lambda ()
-	  (itasca-setup-mode)
-	  (set (make-local-variable 'mode-name) "UDEC")))
+          (itasca-setup-mode)
+          (set (make-local-variable 'mode-name) "UDEC")))
   "Mode for Itasca UDEC 6.0 data files")
 
- ;; (defconst udec-exe "C:/Users/Itasca/Desktop/UDEC500/Exe32/udec500.exe")
- ;; (setq udec-process nil)
- ;; (defun start-udec () (interactive)
- ;;   (setq udec-process  (start-process "udec" "*udec-output*" udec-exe )))
- ;; (defun udec-buffer () (interactive)
- ;;   (process-send-string "*udec-output*" (format "call %s\n"(buffer-file-name))))
- ;; (defun end-udec () (interactive)
- ;;   (delete-process udec-process))
+;C:/Users/Itasca/Desktop/UDEC500/Exe32/udec500.exe
+(defconst udec-exe "C:/src/udec_git/binaries/dbgexe32/UDEC600_dbg.exe")
+(setq udec-process nil)
+(defun start-udec () (interactive)
+  (setq udec-process  (start-process "udec" "*udec-output*"
+                                     udec-exe "test" (buffer-file-name))))
+(defun udec-buffer () (interactive)
+  (process-send-string "*udec-output*" (format "call %s\n"(buffer-file-name))))
+(defun end-udec () (interactive)
+  (delete-process udec-process))
 
 ;; major mode support functions
 
@@ -443,35 +445,35 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (interactive)
   (beginning-of-line)
   (let ((re-kw-up "^[ \t]*\\(def\\|define\\|loop\\|command\\|if\\|case_of\\|caseof\\|section\\|case\\|else\\)")
-	(re-kw-down "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\|case\\|else\\)")
-	(re-kw-down2 "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\)"))
+        (re-kw-down "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\|case[^_o]\\|else\\)")
+        (re-kw-down2 "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\)"))
    (if (bobp)
        (indent-line-to 0)
      (let ((not-indented t) (indent-width 2) cur-indent)
        (if (looking-at re-kw-down)
-	   (progn
-	     (save-excursion
-	       (forward-line -1)
-	       (setq cur-indent (- (current-indentation) indent-width)))
-	     (if (< cur-indent 0)
-		 (setq cur-indent 0)))
-	 (save-excursion
-	   (while not-indented
+           (progn
+             (save-excursion
+               (forward-line -1)
+               (setq cur-indent (- (current-indentation) indent-width)))
+             (if (< cur-indent 0)
+                 (setq cur-indent 0)))
+         (save-excursion
+           (while not-indented
 
-	     (forward-line -1)
-	     (if (looking-at re-kw-down2)
-		 (progn
-		   (setq cur-indent (current-indentation))
-		   (setq not-indented nil))
-	       (if (looking-at re-kw-up)
-		   (progn
-		     (setq cur-indent (+ (current-indentation) indent-width))
-		     (setq not-indented nil))
-		 (if (bobp)
-		     (setq not-indented nil)))))))
+             (forward-line -1)
+             (if (looking-at re-kw-down2)
+                 (progn
+                   (setq cur-indent (current-indentation))
+                   (setq not-indented nil))
+               (if (looking-at re-kw-up)
+                   (progn
+                     (setq cur-indent (+ (current-indentation) indent-width))
+                     (setq not-indented nil))
+                 (if (bobp)
+                     (setq not-indented nil)))))))
        (if cur-indent
-	   (indent-line-to cur-indent)
-	 (indent-line-to 0))))))
+           (indent-line-to cur-indent)
+         (indent-line-to 0))))))
 
 (defconst itasca-defun-start-regexp "^\s*def\s+\\([a-z_]+\\)")
 (defconst itasca-defun-end-regexp "^ *end\\( +\\|;+\\|$\\)")
@@ -485,7 +487,7 @@ FISH function definition."
   (if (looking-at itasca-defun-start-regexp)
       (forward-line -1))
   (while (and (not (looking-at itasca-defun-start-regexp))
-	      (not (bobp)))
+              (not (bobp)))
     (forward-line -1)))
 
 (defun itasca-end-of-defun-function ()
@@ -497,7 +499,7 @@ of the next FISH function definition"
   (if (looking-at itasca-defun-end-regexp)
       (forward-line))
   (while (and (not (looking-at itasca-defun-end-regexp))
-	      (not (eobp)))
+              (not (eobp)))
     (forward-line)))
 
 (defun itasca-change-syntax-table ()
@@ -557,29 +559,29 @@ end;
 
     (itasca-begining-of-defun-function)
     (let ((current-line (buffer-substring-no-properties
-			 (point) (point-at-eol))))
+                         (point) (point-at-eol))))
       (should (equal current-line " def func3")))
 
     (itasca-begining-of-defun-function)
     (let ((current-line (buffer-substring-no-properties
-			 (point) (point-at-eol))))
+                         (point) (point-at-eol))))
       (should (equal current-line "def  func2 ; comment")))
 
     (itasca-begining-of-defun-function)
     (let ((current-line (buffer-substring-no-properties
-			 (point) (point-at-eol))))
+                         (point) (point-at-eol))))
       (should (equal current-line "DEF func1;")))
     (itasca-end-of-defun-function)
     (let ((current-line (buffer-substring-no-properties
-			 (point) (point-at-eol))))
+                         (point) (point-at-eol))))
       (should (equal current-line "end ; junk")))
     (itasca-end-of-defun-function)
     (let ((current-line (buffer-substring-no-properties
-			 (point) (point-at-eol))))
+                         (point) (point-at-eol))))
       (should (equal current-line " end")))
     (itasca-end-of-defun-function)
     (let ((current-line (buffer-substring-no-properties
-			 (point) (point-at-eol))))
+                         (point) (point-at-eol))))
       (should (equal current-line "end;")))))
 
 (ert-deftest itasca-smoketest ()
