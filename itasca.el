@@ -440,6 +440,16 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 
 ;; major mode support functions
 
+(defun itasca-copy-call-buffer-filename-as-kill ()
+  "Insert the string: 'call file-name' to the clipboard where
+file-name is the full path and filename of the current buffer.
+Useful when editing a datafile in emacs and loading it into an
+Itasca code."
+  (interactive)
+  (let ((s (format "call \"%s\"" (buffer-file-name))))
+    (kill-new s)
+    (message "Copied: %s to clipboard" s)))
+
 (defun fish-indent-line ()
   "Indent current line as FISH code"
   (interactive)
@@ -509,7 +519,7 @@ of the next FISH function definition"
 (defun itasca-setup-mode ()
   "set buffer local variables for itasca modes"
   (interactive)
-
+  (local-set-key (kbd "C-c M-c") 'itasca-copy-call-buffer-filename-as-kill)
   (set (make-local-variable 'indent-line-function) 'fish-indent-line)
   (set (make-local-variable 'imenu-case-fold-search) t)
   (set (make-local-variable  'imenu-generic-expression)
