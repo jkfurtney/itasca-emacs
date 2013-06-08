@@ -369,7 +369,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 (define-generic-mode 'itasca-general-mode
   '(";")
   itasca-mode-keyword-list
-  (list (cons itasca-general-function-regexp 'font-lock-type-face)
+  (list (cons itasca-general-function-regexp 'font-lock-builtin-face)
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.dat$" "\\.fis$" "\\.fin$")
@@ -381,7 +381,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 (define-generic-mode  'itasca-pfc-mode
   '(";")
   itasca-mode-keyword-list
-  (list (cons itasca-pfc-function-regexp 'font-lock-type-face)
+  (list (cons itasca-pfc-function-regexp 'font-lock-builtin-face)
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.p3dat$" "\\.p2dat")
@@ -394,7 +394,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   '(";")
   itasca-mode-keyword-list
   (list
-   (cons itasca-flac-function-regexp 'font-lock-type-face)
+   (cons itasca-flac-function-regexp 'font-lock-builtin-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
          'font-lock-variable-name-face))
   '("\\.fdat$")
@@ -406,7 +406,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 (define-generic-mode  'itasca-flac3d-mode
   '(";")
   itasca-mode-keyword-list
-  (list (cons itasca-flac3d-function-regexp 'font-lock-type-face)
+  (list (cons itasca-flac3d-function-regexp 'font-lock-builtin-face)
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.f3dat$")
@@ -418,7 +418,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 (define-generic-mode  'itasca-udec-mode
   '(";")
   itasca-mode-keyword-list
-  (list (cons itasca-udec-function-regexp 'font-lock-type-face)
+  (list (cons itasca-udec-function-regexp 'font-lock-builtin-face)
         (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.udat$")
