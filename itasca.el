@@ -369,9 +369,11 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 (define-generic-mode 'itasca-general-mode
   '(";")
   itasca-mode-keyword-list
-  (list (cons itasca-general-function-regexp 'font-lock-builtin-face)
-        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-              'font-lock-variable-name-face))
+  (list
+   (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
+   (cons itasca-general-function-regexp 'font-lock-builtin-face)
+   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+	 'font-lock-variable-name-face))
   '("\\.dat$" "\\.fis$" "\\.fin$")
   (list (lambda ()
           (itasca-setup-mode)
@@ -381,8 +383,10 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 (define-generic-mode  'itasca-pfc-mode
   '(";")
   itasca-mode-keyword-list
-  (list (cons itasca-pfc-function-regexp 'font-lock-builtin-face)
-        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+  (list
+   (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
+   (cons itasca-pfc-function-regexp 'font-lock-builtin-face)
+   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.p3dat$" "\\.p2dat")
   (list (lambda ()
@@ -394,6 +398,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   '(";")
   itasca-mode-keyword-list
   (list
+   (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-flac-function-regexp 'font-lock-builtin-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
          'font-lock-variable-name-face))
@@ -406,9 +411,11 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 (define-generic-mode  'itasca-flac3d-mode
   '(";")
   itasca-mode-keyword-list
-  (list (cons itasca-flac3d-function-regexp 'font-lock-builtin-face)
-        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-              'font-lock-variable-name-face))
+  (list
+   (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
+   (cons itasca-flac3d-function-regexp 'font-lock-builtin-face)
+   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+	 'font-lock-variable-name-face))
   '("\\.f3dat$")
   (list (lambda ()
           (itasca-setup-mode)
@@ -418,9 +425,11 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 (define-generic-mode  'itasca-udec-mode
   '(";")
   itasca-mode-keyword-list
-  (list (cons itasca-udec-function-regexp 'font-lock-builtin-face)
-        (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-              'font-lock-variable-name-face))
+  (list
+   (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
+   (cons itasca-udec-function-regexp 'font-lock-builtin-face)
+   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
+	 'font-lock-variable-name-face))
   '("\\.udat$")
   (list (lambda ()
           (itasca-setup-mode)
@@ -446,7 +455,12 @@ file-name is the full path and filename of the current buffer.
 Useful when editing a datafile in emacs and loading it into an
 Itasca code."
   (interactive)
-  (let ((s (format "call \"%s\"" (buffer-file-name))))
+  (let* ((name (buffer-file-name))
+	 (template
+	  (if (string-match " " name)
+	      "call \"%s\""
+	    "call %s"))
+	 (s (format template name)))
     (kill-new s)
     (message "Copied: %s to clipboard" s)))
 
