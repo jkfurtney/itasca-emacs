@@ -520,14 +520,12 @@ of the next FISH function definition"
   "set buffer local variables for itasca modes"
   (interactive)
   (local-set-key (kbd "C-c M-c") 'itasca-copy-call-buffer-filename-as-kill)
+  (local-set-key (kbd "C-M-a") 'itasca-begining-of-defun-function)
+  (local-set-key (kbd "C-M-e") 'itasca-end-of-defun-function)
   (set (make-local-variable 'indent-line-function) 'fish-indent-line)
   (set (make-local-variable 'imenu-case-fold-search) t)
   (set (make-local-variable  'imenu-generic-expression)
        (list (list nil itasca-defun-start-regexp 1)))
-  (set (make-local-variable 'beginning-of-defun-function)
-       #'itasca-begining-of-defun-function)
-  (set (make-local-variable 'end-of-defun-function)
-       #'itasca-end-of-defun-function)
   (itasca-change-syntax-table))
 
 ;;; tests
