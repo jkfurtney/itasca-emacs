@@ -464,6 +464,9 @@ Itasca code."
     (kill-new s)
     (message "Copied: %s to clipboard" s)))
 
+;; This function works but there is a minor corner case that is
+;; broken. When on a case statement if the previous (non-whitespace)
+;; line is a caseof we do not want to un-indent
 (defun fish-indent-line ()
   "Indent current line as FISH code"
   (interactive)
@@ -477,13 +480,16 @@ Itasca code."
        (if (looking-at re-kw-down)
            (progn
              (save-excursion
-               (forward-line -1)
+	       (beginning-of-line)
+	       (forward-line -1)
+	       (while (and (not (bobp)) (looking-at "\s*$"))
+		 (forward-line -1))
+	       ; if we are on a black line keep going up
                (setq cur-indent (- (current-indentation) indent-width)))
              (if (< cur-indent 0)
                  (setq cur-indent 0)))
          (save-excursion
            (while not-indented
-
              (forward-line -1)
              (if (looking-at re-kw-down2)
                  (progn
@@ -574,7 +580,7 @@ end;
 
 ")
 
-(ert-deftest itasca-test-defun-nav ()
+(ert-deftest itasca--test-defun-nav ()
   (with-temp-buffer
     (insert itasca-test-fish-code)
     (goto-char (point-max))
@@ -606,7 +612,7 @@ end;
                          (point) (point-at-eol))))
       (should (equal current-line "end;")))))
 
-(ert-deftest itasca-smoketest ()
+(ert-deftest itasca--smoketest ()
   (with-temp-buffer
     (itasca-general-mode))
   (with-temp-buffer
@@ -617,5 +623,75 @@ end;
     (itasca-flac3d-mode))
   (with-temp-buffer
     (itasca-udec-mode)))
+
+;;;; indentation tests
+
+(defun itasca--indentation-test (start-string result)
+  "start-string: an un-indented multiline string to be indented
+and result: the expected result after indentation "
+  (with-temp-buffer
+    (itasca-general-mode)
+    (insert start-string)
+    (indent-region (point-min) (point-max))
+    (should (equal result (buffer-string)))))
+
+(defconst itasca--indent-test-string "
+bp = ball_head
+loop while bp # 0
+if a=0 then
+oo=out('junk')
+
+end_if
+
+bp = b_next(bp)
+end_loop
+")
+
+(defconst itasca--indent-test-string-res "
+bp = ball_head
+loop while bp # 0
+  if a=0 then
+    oo=out('junk')
+
+  end_if
+
+  bp = b_next(bp)
+end_loop
+")
+(ert-deftest itasca--indentation-test-blanks ()
+  (itasca--indentation-test   itasca--indent-test-string
+			      itasca--indent-test-string-res))
+
+(defconst itasca--case-indent-test-string "
+def map_ret_val
+;;comment
+
+caseof type(ret_value)
+
+case 1
+map_ret_value = ret_value
+case 2
+other=thing
+endcase
+end
+")
+(defconst itasca--case-indent-test-string-res "
+def map_ret_val
+  ;;comment
+
+  caseof type(ret_value)
+
+  case 1
+    map_ret_value = ret_value
+  case 2
+    other=thing
+  endcase
+end
+")
+(ert-deftest itasca--indentation-test-case ()
+  :expected-result :failed
+  (itasca--indentation-test   itasca--case-indent-test-string
+			      itasca--case-indent-test-string-res))
+
 
 (provide 'itasca)
