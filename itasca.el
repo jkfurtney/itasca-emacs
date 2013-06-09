@@ -635,7 +635,8 @@ and result: the expected result after indentation "
     (indent-region (point-min) (point-max))
     (should (equal result (buffer-string)))))
 
-(defconst itasca--indent-test-string "
+(ert-deftest itasca--indentation-test-blanks ()
+  (itasca--indentation-test "
 bp = ball_head
 loop while bp # 0
 if a=0 then
@@ -645,9 +646,8 @@ end_if
 
 bp = b_next(bp)
 end_loop
-")
-
-(defconst itasca--indent-test-string-res "
+"
+"
 bp = ball_head
 loop while bp # 0
   if a=0 then
@@ -657,12 +657,11 @@ loop while bp # 0
 
   bp = b_next(bp)
 end_loop
-")
-(ert-deftest itasca--indentation-test-blanks ()
-  (itasca--indentation-test   itasca--indent-test-string
-			      itasca--indent-test-string-res))
+"))
 
-(defconst itasca--case-indent-test-string "
+(ert-deftest itasca--indentation-test-case ()
+  :expected-result :failed
+  (itasca--indentation-test "
 def map_ret_val
 ;;comment
 
@@ -674,8 +673,8 @@ case 2
 other=thing
 endcase
 end
-")
-(defconst itasca--case-indent-test-string-res "
+"
+"
 def map_ret_val
   ;;comment
 
@@ -687,11 +686,39 @@ def map_ret_val
     other=thing
   endcase
 end
-")
-(ert-deftest itasca--indentation-test-case ()
-  :expected-result :failed
-  (itasca--indentation-test   itasca--case-indent-test-string
-			      itasca--case-indent-test-string-res))
+"))
+
+(ert-deftest itasca--indentation-test-case-ok ()
+  (itasca--indentation-test "
+def map_ret_val
+;;comment
+
+caseof type(ret_value)
+
+oo=out('some statement here')
+
+case 1
+map_ret_value = ret_value
+case 2
+other=thing
+endcase
+end
+"
+"
+def map_ret_val
+  ;;comment
+
+  caseof type(ret_value)
+
+    oo=out('some statement here')
+
+  case 1
+    map_ret_value = ret_value
+  case 2
+    other=thing
+  endcase
+end
+"))
 
 
 (provide 'itasca)
