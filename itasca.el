@@ -505,7 +505,7 @@ Itasca code."
            (indent-line-to cur-indent)
          (indent-line-to 0))))))
 
-(defconst itasca-defun-start-regexp "^\s*def\s+\\([a-z_]+\\)")
+(defconst itasca-defun-start-regexp "^\s*def\s+\\([a-zA-Z_]+\\)")
 (defconst itasca-defun-end-regexp "^ *end\\( +\\|;+\\|$\\)")
 
 (defun itasca-begining-of-defun-function ()
