@@ -373,7 +373,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-general-function-regexp 'font-lock-builtin-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-	 'font-lock-variable-name-face))
+         'font-lock-variable-name-face))
   '("\\.dat$" "\\.fis$" "\\.fin$")
   (list (lambda ()
           (itasca-setup-mode)
@@ -388,7 +388,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
    (cons itasca-pfc-function-regexp 'font-lock-builtin-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
-  '("\\.p3dat$" "\\.p2dat")
+  '("\\.p3dat$" "\\.p2dat" "\\.p2fis" "\\.p3fis")
   (list (lambda ()
           (itasca-setup-mode)
           (set (make-local-variable 'mode-name) "PFC")))
@@ -415,8 +415,8 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-flac3d-function-regexp 'font-lock-builtin-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-	 'font-lock-variable-name-face))
-  '("\\.f3dat$")
+         'font-lock-variable-name-face))
+  '("\\.f3dat$" "\\.f3fis")
   (list (lambda ()
           (itasca-setup-mode)
           (set (make-local-variable 'mode-name) "FLAC3D")))
@@ -429,7 +429,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-udec-function-regexp 'font-lock-builtin-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-	 'font-lock-variable-name-face))
+         'font-lock-variable-name-face))
   '("\\.udat$")
   (list (lambda ()
           (itasca-setup-mode)
@@ -456,11 +456,11 @@ Useful when editing a datafile in emacs and loading it into an
 Itasca code."
   (interactive)
   (let* ((name (buffer-file-name))
-	 (template
-	  (if (string-match " " name)
-	      "call \"%s\""
-	    "call %s"))
-	 (s (format template name)))
+         (template
+          (if (string-match " " name)
+              "call \"%s\""
+            "call %s"))
+         (s (format template name)))
     (kill-new s)
     (message "Copied: %s to clipboard" s)))
 
@@ -480,11 +480,11 @@ Itasca code."
        (if (looking-at re-kw-down)
            (progn
              (save-excursion
-	       (beginning-of-line)
-	       (forward-line -1)
-	       (while (and (not (bobp)) (looking-at "\s*$"))
-		 (forward-line -1))
-	       ; if we are on a black line keep going up
+               (beginning-of-line)
+               (forward-line -1)
+               (while (and (not (bobp)) (looking-at "\s*$"))
+                 (forward-line -1))
+               ; if we are on a black line keep going up
                (setq cur-indent (- (current-indentation) indent-width)))
              (if (< cur-indent 0)
                  (setq cur-indent 0)))
