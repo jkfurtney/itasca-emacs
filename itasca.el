@@ -372,6 +372,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-general-function-regexp 'font-lock-builtin-face)
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-variable-name-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
          'font-lock-variable-name-face))
   '("\\.dat$" "\\.fis$" "\\.fin$")
@@ -386,6 +387,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-pfc-function-regexp 'font-lock-builtin-face)
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-variable-name-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
               'font-lock-variable-name-face))
   '("\\.p3dat$" "\\.p2dat" "\\.p2fis" "\\.p3fis")
@@ -400,6 +402,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-flac-function-regexp 'font-lock-builtin-face)
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-variable-name-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
          'font-lock-variable-name-face))
   '("\\.fdat$")
@@ -414,6 +417,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-flac3d-function-regexp 'font-lock-builtin-face)
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-variable-name-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
          'font-lock-variable-name-face))
   '("\\.f3dat$" "\\.f3fis")
@@ -428,6 +432,7 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-udec-function-regexp 'font-lock-builtin-face)
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-variable-name-face)
    (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
          'font-lock-variable-name-face))
   '("\\.udat$")
