@@ -288,7 +288,7 @@ zfd_extra zfd_effective zfd_property zfd_radratio zfd_power
 zfd_tolerance zfd_initialize zfd_getdata zfd_getgpdata zfd_reset
 zfd_hidemechnull zfd_hidefluidnull zfd_hidethermnull
 
-z_id gp_id
+z_id gp_id z_extra
 
 z_aspect z_code z_copy z_density z_dynmul z_facegp z_facesize
 z_flx z_fly z_flz z_fri z_frr z_fsi z_fsr z_geomtest
@@ -365,6 +365,9 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 (defconst itasca-udec-function-regexp
   (regexp-opt itasca-udec-function-list 'words))
 
+(defconst itasca-constant-regexp
+  "[\\^\s\\*\\/\\-\\\\(=]\\([-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?\\)")
+
 ; define the modes
 (define-generic-mode 'itasca-general-mode
   '(";")
@@ -372,9 +375,8 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-general-function-regexp 'font-lock-builtin-face)
-   (cons "@[a-zA-Z0-9_]+" 'font-lock-variable-name-face)
-   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-         'font-lock-variable-name-face))
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-builtin-face)
+   (cons itasca-constant-regexp '(1 'font-lock-constant-face)))
   '("\\.dat$" "\\.fis$" "\\.fin$")
   (list (lambda ()
           (itasca-setup-mode)
@@ -387,9 +389,8 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-pfc-function-regexp 'font-lock-builtin-face)
-   (cons "@[a-zA-Z0-9_]+" 'font-lock-variable-name-face)
-   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-              'font-lock-variable-name-face))
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-builtin-face)
+   (cons itasca-constant-regexp '(1 'font-lock-constant-face)))
   '("\\.p3dat$" "\\.p2dat" "\\.p2fis" "\\.p3fis")
   (list (lambda ()
           (itasca-setup-mode)
@@ -402,9 +403,8 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-flac-function-regexp 'font-lock-builtin-face)
-   (cons "@[a-zA-Z0-9_]+" 'font-lock-variable-name-face)
-   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-         'font-lock-variable-name-face))
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-builtin-face)
+   (cons itasca-constant-regexp '(1 'font-lock-constant-face)))
   '("\\.fdat$")
   (list (lambda ()
           (itasca-setup-mode)
@@ -417,9 +417,8 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-flac3d-function-regexp 'font-lock-builtin-face)
-   (cons "@[a-zA-Z0-9_]+" 'font-lock-variable-name-face)
-   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-         'font-lock-variable-name-face))
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-builtin-face)
+   (cons itasca-constant-regexp '(1 'font-lock-constant-face)))
   '("\\.f3dat$" "\\.f3fis")
   (list (lambda ()
           (itasca-setup-mode)
@@ -432,10 +431,9 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
   (list
    (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
    (cons itasca-udec-function-regexp 'font-lock-builtin-face)
-   (cons "@[a-zA-Z0-9_]+" 'font-lock-variable-name-face)
-   (cons "[-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?"
-         'font-lock-variable-name-face))
-  '("\\.udat$")
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-builtin-face)
+   (cons itasca-constant-regexp '(1 'font-lock-constant-face)))
+  '("\\.udat$" "\\.ufis")
   (list (lambda ()
           (itasca-setup-mode)
           (set (make-local-variable 'mode-name) "UDEC")))
@@ -510,7 +508,7 @@ Itasca code."
            (indent-line-to cur-indent)
          (indent-line-to 0))))))
 
-(defconst itasca-defun-start-regexp "^\s*def\s+\\([a-zA-Z_]+\\)")
+(defconst itasca-defun-start-regexp "^\s*def\s+\\([a-zA-Z_0-9]+\\)")
 (defconst itasca-defun-end-regexp "^ *end\\( +\\|;+\\|$\\)")
 
 (defun itasca-begining-of-defun-function ()
