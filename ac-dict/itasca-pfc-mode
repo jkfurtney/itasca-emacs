@@ -140,6 +140,10 @@ ccfd_zballff
 ccfd_elemu
 ccfd_elerho
 ccfd_elepress
+ccfd_eps_min
+ccfd_scale_mode
+ccfd_clump_mode
+ccfd_drag_radius
 fc_x
 fc_y
 fc_z

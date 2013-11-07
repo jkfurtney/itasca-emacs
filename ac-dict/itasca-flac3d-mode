@@ -838,6 +838,7 @@ zfd_hidefluidnull
 zfd_hidethermnull
 z_id
 gp_id
+z_extra
 z_aspect
 z_code
 z_copy
