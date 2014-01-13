@@ -13,14 +13,17 @@
 
 (defun itasca-write-ac-defs ()
   (write-ac-dict-file "ac-dict/itasca-general-mode"
-		      itasca-general-function-list)
+                      itasca-general-function-list)
   (write-ac-dict-file "ac-dict/itasca-pfc-mode"
-		      itasca-pfc-function-list)
+                      itasca-pfc-function-list)
   ;; (write-ac-dict-file "ac-dict/itasca-flac-mode"
-  ;; 		    itasca-flac-function-list)
+  ;;                itasca-flac-function-list)
   (write-ac-dict-file "ac-dict/itasca-flac3d-mode"
-		      itasca-flac3d-function-list)
+                      itasca-flac3d-function-list)
+  (write-ac-dict-file "ac-dict/itasca-pfc5-mode"
+                      itasca--pfc5-function-list)
+
   (write-ac-dict-file "ac-dict/itasca-udec-mode"
-		      itasca-udec-function-list))
+                      itasca-udec-function-list))
 
 (itasca-write-ac-defs)
