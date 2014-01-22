@@ -22,7 +22,8 @@ along with indenting and code navigation support.
 | .fdat             | `itasca-flac-mode` |
 | .f3dat            | `itasca-flac3d-mode` |
 | .udat             | `itasca-udec-mode` |
-| .p3dat .p2dat     | `itasca-pfc-mode` |
+| .pdat     | `itasca-pfc-mode` |
+| .p3dat .p2dat     | `itasca-pfc5-mode` |
 
 `itasca-general-mode` does not have any code-specific keyword/FISH
 highlighting. To associate a specific file extension with a specific mode (for example to open all .dat files in `itasca-flac-mode`) use:
@@ -36,6 +37,7 @@ form at the top of the file.
     ;; -*- mode: itasca-flac -*-
     ;; -*- mode: itasca-flac3d -*-
     ;; -*- mode: itasca-pfc -*-
+    ;; -*- mode: itasca-pfc5 -*-
     ;; -*- mode: itasca-udec -*-
 
 ### Code navigation
@@ -76,6 +78,7 @@ auto-completed.
     (progn
       (add-to-list 'ac-modes 'itasca-general-mode)
       (add-to-list 'ac-modes 'itasca-pfc-mode)
+      (add-to-list 'ac-modes 'itasca-pfc5-mode)
       (add-to-list 'ac-modes 'itasca-flac-mode)
       (add-to-list 'ac-modes 'itasca-flac3d-mode)
       (add-to-list 'ac-modes 'itasca-udec-mode))

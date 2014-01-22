@@ -16,7 +16,7 @@ def print_intrinsics(filename):
             match = pattern.match(line)
             if match:
                 if vector_intrinsic:
-                    print "{0}.x {0}.y {0}.z".format(match.groups()[0]),
+                    print "{0} {0}.x {0}.y {0}.z".format(match.groups()[0]),
                     print " ",
                 else:
                     print match.groups()[0],
