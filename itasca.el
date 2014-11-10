@@ -335,6 +335,89 @@ bou_xreaction bou_yreactionbou_near z_fsi z_fsr z_density z_biot
 z_group b_group c_group gp_addxmass tgps_head tgps_next tgps_type
 tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
 
+(defconst itasca-3dec-functions "
+apply_head atol b_near tdel step time xgrav ygrav zgrav grav_x
+grav_y grav_z block_head contact_head cable_node_head
+cable_elem_head imem fmem fluid_density fracb fracz r_head
+bou_head gp_near z_near c_near ftime r_prop_head cable_head
+cable_prop_head liner_head liner_prop_head bou_his_head
+water_table_head btol ctol dtol etol damp_alpha damp_beta
+damp_auto damp_local crtdel crtime cf_thermal cf_dynamic
+cf_feblock cf_rhs cf_liner cf_creep flow_head knot_head b_inside
+beam_elem_head beam_node_head beam_contact_head ftdel flowrate
+flowvel j_model j_prop fzoneloc cycle thdt thtime unbal grav xmem
+bou_new knot_near liner_element_head liner_node_head
+liner_contact_head nblock nzone fos
+
+b_cons b_dsf b_fix b_gp b_id b_mass b_mat b_ms b_msnext b_next
+b_x b_y b_z b_cent b_xvel b_yvel b_zvel b_vel b_type b_area
+b_xforce b_yforce b_zforce b_force b_xload b_yload b_zload b_load
+b_zone b_vertex b_rxvel b_ryvel b_rzvel b_rvel b_vol b_xmoi
+b_ymoi b_zmoi b_moi b_xmom b_ymom b_zmom b_mom b_region b_face
+b_face2 b_ispare b_rspare b_wall b_moitensor b_group b_extra
+b_feb_element b_feb_face b_hidden
+
+bou_gp bou_xforce bou_yforce bou_zforce bou_force bou_next
+bou_xtype bou_ytype bou_ztype bou_xfinc bou_yfinc bou_zfinc
+bou_finc bou_xhadd bou_yhadd bou_zhadd bou_xvel bou_yvel bou_zvel
+bou_vel
+
+c_next c_type c_x c_y c_z c_pos c_mat c_cons c_b1 c_b2 c_link1
+c_link2 c_ndis c_nforce c_nx c_ny c_nz c_n c_obj_type c_area c_cx
+c_jset c_ispare c_rspare c_extra c_group c_fid c_flowplane c_cid
+
+face_next face_block face_vlist face_nx face_ny face_nz face_n
+face_jset face_sreg face_flow face_extra face_zone face_ngp
+face_gp face_area face_fracid face_group face_pos face_faceid
+
+fk_next fk_x fk_y fk_z fk_pos fk_pp fk_fixf fk_qf fk_unbvmax
+fk_area fk_stiff fk_trans fk_vol fk_unbv fk_temp fk_qt fk_qtsum
+fk_unqt fk_htc fk_fixt fk_timestep
+
+fp_next fp_c fp_fpx fp_area fp_x fp_y fp_z fp_cent fp_local1
+fp_local2 fp_fzone
+
+fpx_next fpx_xlocal fpx_ylocal fpx_aperture fpx_cx1 fpx_weight1
+fpx_cx2 fpx_weight2 fpx_apmech fpx_knot fpx_area fpx_pos
+fpx_propconc fpx_propthick
+
+fpz_next fpz_fpx1 fpz_fpx2 fpz_fpx3 fpz_area fpz_cent
+fpz_discharge fpz_vel
+
+le_next le_nodea le_nodeb le_nodec le_prop le_normal le_id
+le_area le_face le_fibermax le_fibermin le_membranemax
+le_membranemin le_momentmax le_momentmin le_spare1 le_spare2
+le_spare3 le_stress le_moment
+
+m_jkn m_jks m_jcohesion m_jtension m_jdilation m_density m_bulk
+m_shear m_friction m_cohesion m_tension m_dilation m_phi
+m_bcohesion m_btension m_psi m_jfriction m_bfriction m_bdilation
+
+cx_next cx_type cx_x cx_y cx_z cx_pos cx_area cx_mat cx_cons
+cx_vertex cx_face cx_edge1 cx_edge2 cx_ndis cx_xsdis cx_ysdis
+cx_zsdis cx_sdis cx_nforce cx_xsforce cx_ysforce cx_zsforce
+cx_sforce cx_state cx_pp cx_ppforce cx_contact cx_model cx_prop
+cx_ispare cx_rspare cx_extra cx_group cx_fid cx_id
+
+gp_next gp_x gp_y gp_z gp_pos gp_xvel gp_yvel gp_zvel gp_vel
+gp_xforce gp_yforce gp_zforce gp_force gp_mass gp_dsf gp_xdis
+gp_ydis gp_zdis gp_dis gp_bou gp_block gp_id gp_pp gp_temp
+gp_xreaction gp_yreaction gp_zreaction gp_ispare gp_rspare
+gp_extra gp_group gp_fk
+
+vl_next   vl_vertex   vl_gp
+
+z_next z_gp z_x z_y z_z z_cen z_sxx z_sxy z_sxz z_syy z_syz z_szz
+z_mass z_block z_mat z_bulk z_shear z_pp z_sig1 z_sig2 z_sig3
+z_sig z_prop z_model z_state z_ispare z_rspare z_fsi z_fsr z_fri
+z_frr z_ssi z_ssr z_vsi z_vsr z_geo_metric z_sonplane
+z_total_strain z_group z_vol z_extra z_id z_perm z_poros
+z_discharge
+
+zfd_dataname zfd_dataindex zfd_methodname zfd_methodindex
+zfd_extra zfd_effective zfd_property zfd_radratio zfd_power
+zfd_tolerance zfd_initialize zfd_getdata zfd_reset ")
+
 ;; FISH function lists for each mode
 (defconst itasca-mode-keyword-list
   (split-string itasca-mode-keywords))
@@ -365,6 +448,13 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
              (list itasca-general-functions itasca-udec-functions)))
 (defconst itasca-udec-function-regexp
   (regexp-opt itasca-udec-function-list 'words))
+
+(defconst itasca-3dec-function-list
+  (cl-mapcan #'split-string
+             (list itasca-general-functions itasca-new-framework-functions
+                   itasca-3dec-functions)))
+(defconst itasca-3dec-function-regexp
+  (regexp-opt itasca-3dec-function-list 'words))
 
 (defconst itasca-constant-regexp
   "[\\^\s\\*\\/\\-\\\\(=]\\([-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?\\)")
@@ -440,16 +530,19 @@ tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
           (set (make-local-variable 'mode-name) "UDEC")))
   "Mode for Itasca UDEC 6.0 data files")
 
-;C:/Users/Itasca/Desktop/UDEC500/Exe32/udec500.exe
-(defconst udec-exe "C:/src/udec_git/binaries/dbgexe32/UDEC600_dbg.exe")
-(setq udec-process nil)
-(defun start-udec () (interactive)
-  (setq udec-process  (start-process "udec" "*udec-output*"
-                                     udec-exe "test" (buffer-file-name))))
-(defun udec-buffer () (interactive)
-  (process-send-string "*udec-output*" (format "call %s\n"(buffer-file-name))))
-(defun end-udec () (interactive)
-  (delete-process udec-process))
+(define-generic-mode  'itasca-3dec-mode
+  '(";")
+  itasca-mode-keyword-list
+  (list
+   (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
+   (cons itasca-3dec-function-regexp 'font-lock-builtin-face)
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-builtin-face)
+   (cons itasca-constant-regexp '(1 'font-lock-constant-face)))
+  '("\\.3ddat$")
+  (list (lambda ()
+          (itasca-setup-mode)
+          (set (make-local-variable 'mode-name) "3DEC")))
+  "Mode for Itasca 3DEC 5.0 data files")
 
 ;; major mode support functions
 

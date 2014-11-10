@@ -22,7 +22,8 @@
                       itasca-flac3d-function-list)
   (write-ac-dict-file "ac-dict/itasca-pfc5-mode"
                       itasca--pfc5-function-list)
-
+  (write-ac-dict-file "ac-dict/itasca-3dec-mode"
+                      itasca-3dec-function-list)
   (write-ac-dict-file "ac-dict/itasca-udec-mode"
                       itasca-udec-function-list))
 
