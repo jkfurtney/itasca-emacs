@@ -22,11 +22,13 @@ along with indenting and code navigation support.
 | .fdat             | `itasca-flac-mode` |
 | .f3dat            | `itasca-flac3d-mode` |
 | .udat             | `itasca-udec-mode` |
-| .pdat     | `itasca-pfc-mode` |
+| .pdat             | `itasca-pfc-mode` |
 | .p3dat .p2dat     | `itasca-pfc5-mode` |
+| .3ddat            | `itasca-3dec-mode`|
 
 `itasca-general-mode` does not have any code-specific keyword/FISH
-highlighting. To associate a specific file extension with a specific mode (for example to open all .dat files in `itasca-flac-mode`) use:
+highlighting. To associate a specific file extension with a specific
+mode (for example to open all .dat files in `itasca-flac-mode`) use:
 
     (add-to-list 'auto-mode-alist '("\\.dat$'" . itasca-flac-mode))
 
@@ -39,6 +41,7 @@ form at the top of the file.
     ;; -*- mode: itasca-pfc -*-
     ;; -*- mode: itasca-pfc5 -*-
     ;; -*- mode: itasca-udec -*-
+    ;; -*- mode: itasca-3dec -*-
 
 ### Code navigation
 
@@ -81,4 +84,5 @@ auto-completed.
       (add-to-list 'ac-modes 'itasca-pfc5-mode)
       (add-to-list 'ac-modes 'itasca-flac-mode)
       (add-to-list 'ac-modes 'itasca-flac3d-mode)
-      (add-to-list 'ac-modes 'itasca-udec-mode))
+      (add-to-list 'ac-modes 'itasca-udec-mode)
+      (add-to-list 'ac-modes 'itasca-3dec-mode))
