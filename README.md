@@ -7,7 +7,7 @@ If you are a vim user see: https://github.com/juanpabloaj/vim-fish
 ### Installation:
 
 Copy this file somewhere on the emacs load-path and
-add `(require "itasca.el")` to your .emacs file.
+add `(require 'itasca)` to your .emacs file.
 
 ### About
 
