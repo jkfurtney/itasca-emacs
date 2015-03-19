@@ -10,6 +10,7 @@
 ;; case insensitivity for highlighting
 ;; 3DEC mode
 
+(require 'cl-lib)
 (require 'generic-x)
 
 (defconst itasca-mode-keywords "def define loop command if
