@@ -1,14 +1,70 @@
+;;; itasca.el --- Major modes for Itasca software data files.
+
+;; Copyright (C) 2013-2016 Jason Furtney and contributors
+;;
+;; Author: Jason Furtney <jkfurtney@gmail.com>
+;; URL: http://github.com/jkfurtney/itasca-emacs/
+;; Package-Requires: ((emacs "24"))
+;; Version: 1.0
+;; Keywords: itasca, FLAC, 3DEC, UDEC, FLAC3D, PFC, PFC2D, PFC3D, FISH
+
+;; This file is not part of GNU Emacs.
+
+;;; License:
+
+;; Licensed under the same terms as Emacs.
+
+;;; Commentary:
+
 ;; Emacs modes for editing Itasca software data files.
 ;; ---------------------------------------------------
 ;; FLAC FLAC3D UDEC 3DEC PFC www.itascacg.com/software
 ;;
-;; see Readme.txt for more information
+;; Copy this file somewhere on the emacs load-path and add
+;; (require 'itasca) to your .emacs file. (Or install via melpa.)
+;;
+;; This package defines five emacs major modes for editing Itasca
+;; software data files. The focus is on making FISH programming
+;; easier. Code specific keyword and FISH intrinsic highlighting is
+;; provided along with indenting and code navigation support.
+
+;; These file extensions are mapped to the following major modes:
+;;
+;;  .dat .fis .fin  :  itasca-general-mode
+;;  .fdat           :  itasca-flac-mode
+;;  .f3dat          :  itasca-flac3d-mode
+;;  .udat           :  itasca-udec-mode
+;;  .pdat           :  itasca-pfc-mode
+;;  .p3dat .p2dat   :  itasca-pfc5-mode
+;;  .3ddat          :  itasca-3dec-mode
+
+;; itasca-general-mode does not have any code-specific keyword/FISH
+;; highlighting. To associate a specific file extension with a
+;; specific mode (for example to open all .dat files in
+;; itasca-flac-mode) use:
+;;
+;; (add-to-list 'auto-mode-alist '("\\.dat$'" . itasca-flac-mode))
+
+;; To set the major mode on a per-file basis: put a comment in the
+;; following form at the top of the file.
+;;
+;; ;; -*- mode: itasca-general -*-
+;; ;; -*- mode: itasca-flac -*-
+;; ;; -*- mode: itasca-flac3d -*-
+;; ;; -*- mode: itasca-pfc -*-
+;; ;; -*- mode: itasca-pfc5 -*-
+;; ;; -*- mode: itasca-udec -*-
+;; ;; -*- mode: itasca-3dec -*-
+
+;; Code navigation, auto-complete and snippets are provided. For a
+;; detailed introduction see:
+;; https://github.com/jkfurtney/itasca-emacs/blob/master/README.md
 ;;
 ;; to do:
-;; fix global namespace pollution
 ;; redo FLAC mode
 ;; case insensitivity for highlighting
-;; 3DEC mode
+
+;;; Code:
 
 (require 'cl-lib)
 (require 'generic-x)
