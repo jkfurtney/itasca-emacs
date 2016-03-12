@@ -621,7 +621,7 @@ Itasca code."
 ;; This function works but there is a minor corner case that is
 ;; broken. When on a case statement if the previous (non-whitespace)
 ;; line is a caseof we do not want to un-indent
-(defun fish-indent-line ()
+(defun itasca--fish-indent-line ()
   "Indent current line as FISH code"
   (interactive)
   (beginning-of-line)
@@ -696,7 +696,7 @@ of the next FISH function definition"
   (local-set-key (kbd "C-c M-c") 'itasca-copy-call-buffer-filename-as-kill)
   (local-set-key (kbd "C-M-a") 'itasca-begining-of-defun-function)
   (local-set-key (kbd "C-M-e") 'itasca-end-of-defun-function)
-  (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+  (set (make-local-variable 'indent-line-function) 'itasca--fish-indent-line)
   (set (make-local-variable 'imenu-case-fold-search) t)
   (set (make-local-variable  'imenu-generic-expression)
        (list (list nil itasca-defun-start-regexp 1)))
