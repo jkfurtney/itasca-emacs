@@ -483,7 +483,7 @@ zfd_tolerance zfd_initialize zfd_getdata zfd_reset))
 (defconst itasca-general-function-regexp
   (regexp-opt itasca-general-function-list 'words))
 
-(defconst itasca-pfc-function-listq
+(defconst itasca-pfc-function-list
   (mapcar 'symbol-name
              (append itasca-general-functions itasca-pfc-functions)))
 (defconst itasca-pfc-function-regexp
