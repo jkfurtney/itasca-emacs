@@ -67,6 +67,7 @@
 ;;; Code:
 
 (require 'generic-x)
+(require 'ert)
 
 (defconst itasca-mode-keywords '(def define loop command if
 case_of caseof section end end_loop endloop end_command
