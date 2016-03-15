@@ -4,6 +4,8 @@ FLAC FLAC3D UDEC 3DEC PFC www.itascacg.com/software
 
 If you are a vim user see: https://github.com/juanpabloaj/vim-fish
 
+If you are a Sublime text 2 user see: https://github.com/juanpabloaj/sublime-itasca-fish
+
 ### Installation:
 
 Copy this file somewhere on the emacs load-path and
