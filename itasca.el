@@ -4,8 +4,8 @@
 ;;
 ;; Author: Jason Furtney <jkfurtney@gmail.com>
 ;; URL: http://github.com/jkfurtney/itasca-emacs/
-;; Package-Requires: ((emacs "24"))
-;; Version: 1.0
+;; Package-Requires: ((emacs "24.3"))
+;; Version: 1.1
 ;; Keywords: itasca, FLAC, 3DEC, UDEC, FLAC3D, PFC, PFC2D, PFC3D, FISH
 
 ;; This file is not part of GNU Emacs.
@@ -66,16 +66,16 @@
 
 ;;; Code:
 
-(require 'cl-lib)
 (require 'generic-x)
+(require 'ert)
 
-(defconst itasca-mode-keywords "def define loop command if
+(defconst itasca-mode-keywords '(def define loop command if
 case_of caseof section end end_loop endloop end_command
 endcommand end_if endif end_case endcase end_section endsection
 case else array local global argument while null then
-while_stepping whilestepping exit")
+while_stepping whilestepping exit))
 
-(defconst itasca-general-functions "array_dim array_size
+(defconst itasca-general-functions '(array_dim array_size
 buildstr char clock code_majorversion code_minorversion code_name
 ddfromnorm dipfromnorm environment error fc_arg find_range
 fish_majorversion fish_minorversion float from_principal
@@ -95,10 +95,10 @@ xmlparse get_socket lose_socket sread
 del_table get_table table table_id
 table_name table_size vtable xtable ytable
 
-get_mem lose_mem mem")
+get_mem lose_mem mem))
 
 ;; new in FLAC3D 5.0
-(defconst itasca-new-framework-functions "uds_list uds_head
+(defconst itasca-new-framework-functions '(uds_list uds_head
 uds_next uds_find uds_near uds_create uds_id uds_group
 uds_isgroup uds_removegroup uds_extra uds_pos uds_remove
 uds_value udv_list udv_head udv_next udv_find udv_near udv_create
@@ -146,9 +146,9 @@ di_find di_typeid di_typename di_end1 di_end2 di_pos1 di_pos2
 dtp_list dtp_find dtp_get dtp_id dtp_name dtp_stype dtp_snbp
 dtp_sparam dtp_smin dtp_smax dtp_otype dtp_onbp dtp_oparam
 dtp_dmin dtp_dmax dtp_ddmin dtp_ddmax dtp_ptype dtp_pnbp
-dtp_pparam dtp_pmin dtp_pmax")
+dtp_pparam dtp_pmin dtp_pmax))
 
-(defconst itasca-pfc-functions "ccfd_nele ccfd_nnode
+(defconst itasca-pfc-functions '(ccfd_nele ccfd_nnode
 ccfd_elenode ccfd_xnode ccfd_ynode ccfd_znode ccfd_por ccfd_xvel
 ccfd_yvel ccfd_zvel ccfd_xdrag ccfd_ydrag ccfd_zdrag ccfd_t_s
 ccfd_fite ccfd_xgradp ccfd_ygradp ccfd_zgradp ccfd_elevol
@@ -227,13 +227,13 @@ w_next w_clist w_id w_x w_y w_z w_pos w_ux w_uy w_uz w_vu w_xvel
 w_yvel w_zvel w_vvel w_xfob w_yfob w_zfob w_vfob w_kn w_ks w_fric w_ex
 del_wall w_color w_flist w_wlist w_extra w_fix w_delete w_rxvel
 w_ryvel w_rzvel w_rvel w_vrvel w_xmom w_ymom w_zmom w_mom w_vmom
-w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad")
+w_type w_radvel w_radfob w_radend1 w_radend2 w_posend1 w_posend2 w_rad))
 
 ;; FLAC 7.0 specific
 ;; fix this
 (defconst itasca-flac-function-regexp "\\<\\(a\\(?:bs\\|cos\\|n\\(?:d\\|gle\\|isotropic\\)\\|pp\\(?:_pnt\\|gw_pnt\\|ly\\|th_pnt\\)\\|r\\(?:ea\\|ray\\)\\|s\\(?:in\\|pect\\|x[xy]\\|yy\\|zz\\)\\|t\\(?:an2?\\|t\\(?:_pnt\\|ach\\)\\)\\|[34]\\)\\|b\\(?:a\\(?:ck\\|ud\\)\\|icoe\\|s\\(?:x[xy]\\|yy\\|zz\\)\\)\\|c\\(?:a\\(?:ll\\|se\\(?:_?of\\)?\\)\\|f_\\(?:axi\\|creep\\|dyn\\|ext\\|gw\\|ps\\|therm\\)\\|ga\\|har\\|lo\\(?:ck\\|se\\)\\|m_max\\|o\\(?:lumns\\|mmand\\|n\\(?:fig\\|stitutive\\(?:_?model\\)\\)\\|s\\)\\|parse\\|r\\(?:dt\\|eep\\|t\\(?:del\\|ime\\)\\)\\|s\\(?:c\\|x[xy]\\|yy\\|zz\\)\\|ycle\\)\\|d\\(?:a\\(?:mp\\(?:ing\\)?\\|tum\\)\\|e\\(?:fine\\|grad\\|nsity\\)\\|o_update\\|s\\(?:x[xy]\\|yy\\|zz\\)\\|ump\\|y\\(?:_state\\|dt\\(?:_gp[ij]\\)?\\|namic\\|t\\(?:del\\|ime\\)\\)\\|[ty]\\)\\|e\\(?:_p\\|cho\\|ga\\|l\\(?:astic\\|se\\)\\|nd\\(?:_\\(?:c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)\\|c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)?\\|rror\\|v_\\(?:p\\|tot\\)\\|x\\(?:it\\|p\\)\\)\\|f\\(?:2mod\\|_prop\\|c_arg\\|i\\(?:lcolor\\|sh\\(?:_msg\\|call\\)?\\|x\\)\\|l\\(?:ags\\|o\\(?:at\\|w\\)\\|prop\\)\\|m\\(?:em\\|od\\)\\|o\\(?:b[lu]\\|rce\\|s\\(?:_f\\)?\\)\\|r\\(?:ee\\|iend\\)\\|s\\(?:tring\\|[ir]\\)\\|tens\\)\\|g\\(?:2flow\\|e\\(?:n\\|t_mem\\)\\|flow\\|msmul\\|p\\(?:_copy\\|p\\)\\|r\\(?:\\(?:an\\|i\\)d\\)\\|w\\(?:dt\\|t\\(?:del\\|ime\\)\\)\\)\\|h\\(?:b[ms]\\|elp\\|is\\(?:file\\)?\\)\\|i\\(?:e\\(?:b\\(?:_pnt\\)?\\|rr\\)\\|face\\|gp\\|m\\(?:em\\|plicit\\)\\|n\\(?:formation\\|i\\(?:\\(?:mode\\|tia\\)l\\)\\|t\\(?:_pnt\\|erface\\)?\\)\\|tasca\\|zones\\|[fn]\\)\\|j\\(?:err\\|gp\\|zones\\)\\|l\\(?:arge\\|egend\\|ff_pnt\\|i\\(?:mits\\|st\\)\\|mul\\|n\\|o\\(?:g\\|op\\|se_mem\\)\\)\\|m\\(?:a\\(?:rk\\|t_\\(?:\\(?:inver\\|transpo\\)se\\)\\|x\\(?:dt\\)?\\)\\|e\\(?:chanical\\|m\\(?:ory\\)?\\|ssage\\)\\|in\\(?:dt\\)?\\|o\\(?:del?\\|hr-coulomb\\|\\(?:nchrom\\|vi\\)e\\)\\)\\|n\\(?:c\\(?:ontours\\|write\\)\\|e\\(?:rr\\(?:_fish\\)?\\|w\\)\\|grwater\\|mechanical\\|ot\\|step\\|thermal\\|ull\\|wgpp\\)\\|o\\(?:pen\\|r\\|ut\\)\\|p\\(?:_stress\\|a\\(?:c\\|\\(?:lett\\|[ru]s\\)e\\)\\|fast\\|l\\(?:ot\\|t\\(?:angle\\|\\(?:cohes\\|frict\\|tens\\)ion\\)\\)\\|o\\(?:ro2\\|wer\\)\\|r\\(?:e\\(?:_?parse\\)\\|int\\|op\\)\\|slow\\|[ip]\\)\\|quit\\|r\\(?:_integrate\\|a\\(?:nge\\|yleigh\\)\\|e\\(?:ad\\|s\\(?:et\\|tore\\)\\|turn\\|z_exe\\)\\|\\(?:ff_pn\\|sa\\)t\\)\\|s\\(?:_\\(?:3dd\\|dyn\\|echo\\|flow\\|imp\\|log\\|m\\(?:e\\(?:ch\\|ss\\)\\|ovie\\)\\|therm\\)\\|a\\(?:t\\|ve\\)\\|cl\\(?:in\\|ose\\)\\|e\\(?:ction\\|t\\)\\|gn\\|i\\(?:g[12]\\|n\\)\\|m\\(?:_max\\|all\\)\\|o\\(?:lve\\|pen\\)\\|qrt\\|read\\|s\\(?:[ir]3d\\|[ir]\\)?\\|t\\(?:ate\\|ep\\|op\\|r\\(?:_pnt\\|ing\\|ucture\\)\\)\\|write\\|x[xy]\\|y[sy]\\|zz\\)\\|t\\(?:a\\(?:b\\(?:_pnt\\|le\\(?:_size\\)?\\)\\|n\\)\\|e\\(?:mperature\\|n\\(?:flg\\|sion\\)\\)\\|flow\\|h\\(?:dt\\|e\\(?:n\\|rmal\\|ta\\)\\|t\\(?:del\\|ime\\)\\)\\|itle\\|olerance\\|rac\\(?:_pnt\\|k\\)\\|ype\\)\\|u\\(?:biquitous\\|cs\\|d\\(?:coe\\|m_pnt\\)\\|mul\\|n\\(?:b\\(?:al\\|flow\\)\\|mark\\)\\|rand\\)\\|v\\(?:_n\\(?:gw\\|mech\\|therm\\)\\|ector\\|g\\(?:a\\|p\\(?:0\\|c\\(?:n?w\\)\\)\\)\\|is\\(?:cous\\|rat\\)\\|ol_strain\\|s\\(?:x[xz]\\|yy\\|zz\\|[ir]\\)?\\)\\|w\\(?:ater\\|b\\(?:iot\\|ulk\\)\\|dens\\|hile\\(?:_?stepping\\)?\\|i\\(?:ndow\\|pp\\)\\|k\\(?:1[12]\\|22\\)\\|rite\\)\\|x\\(?:acc\\|body\\|disp\\|f\\(?:low\\|or\\(?:ce\\|m\\)\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\|ywrite\\)\\|y\\(?:acc\\|body\\|disp\\|f\\(?:low\\|orce\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\)\\|z\\(?:_\\(?:copy\\|group\\|hyst\\|model\\|prop\\)\\|art\\|d\\(?:e\\(?:1[12]\\|22\\|33\\)\\|pp\\|rot\\)\\|msmul\\|poros\\|s\\(?:1[12]\\|22\\|33\\|ub\\)\\|t\\(?:e[a-d]\\|s[a-d]\\)\\|visc\\|xbar\\)\\|[rxy]\\)\\>")
 
-(defconst itasca-flac3d-functions "at_pos at_slave at_type
+(defconst itasca-flac3d-functions '(at_pos at_slave at_type
 at_master at_masterzn at_zoneface at_delete at_weight at_qweight
 at_snap at_create
 
@@ -361,9 +361,9 @@ z_mechpropname z_flmodel z_flprop z_thmodel z_thprop z_fl z_q
 z_prin z_cen z_facenorm z_xfacenorm z_yfacenorm z_zfacenorm
 z_findface z_linkzone z_linkindex z_apply z_iecreate
 z_qualitytest z_facegroup z_faceextra z_faceremovegroup
-z_faceingroup")
+z_faceingroup))
 
-(defconst itasca-udec-functions "tdel step time xgrav ygrav
+(defconst itasca-udec-functions '(tdel step time xgrav ygrav
 grav_x grav_y block_head contact_head domain_head m_jkn m_jks
 b_next b_x b_y b_xvel b_yvel str_node_head str_elem_head
 cable_node_head cable_elem_head cycle unbal m_jfriction
@@ -390,21 +390,21 @@ sol_fob sol_fmag sol_rloc sol_rmax code_name version sub_version
 rel_version z_model j_model j_prop d_temp set_error z_inside
 bou_xreaction bou_yreactionbou_near z_fsi z_fsr z_density z_biot
 z_group b_group c_group gp_addxmass tgps_head tgps_next tgps_type
-tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass")
+tgps_strength tgps_decay tgps_timeth tgps_gp tgps_cor gp_thmass))
 
-(defconst itasca-3dec-functions "
-apply_head atol b_near tdel step time xgrav ygrav zgrav grav_x
-grav_y grav_z block_head contact_head cable_node_head
-cable_elem_head imem fmem fluid_density fracb fracz r_head
-bou_head gp_near z_near c_near ftime r_prop_head cable_head
-cable_prop_head liner_head liner_prop_head bou_his_head
-water_table_head btol ctol dtol etol damp_alpha damp_beta
-damp_auto damp_local crtdel crtime cf_thermal cf_dynamic
-cf_feblock cf_rhs cf_liner cf_creep flow_head knot_head b_inside
-beam_elem_head beam_node_head beam_contact_head ftdel flowrate
-flowvel j_model j_prop fzoneloc cycle thdt thtime unbal grav xmem
-bou_new knot_near liner_element_head liner_node_head
-liner_contact_head nblock nzone fos
+(defconst itasca-3dec-functions '(apply_head atol b_near tdel
+step time xgrav ygrav zgrav grav_x grav_y grav_z block_head
+contact_head cable_node_head cable_elem_head imem fmem
+fluid_density fracb fracz r_head bou_head gp_near z_near c_near
+ftime r_prop_head cable_head cable_prop_head liner_head
+liner_prop_head bou_his_head water_table_head btol ctol dtol etol
+damp_alpha damp_beta damp_auto damp_local crtdel crtime
+cf_thermal cf_dynamic cf_feblock cf_rhs cf_liner cf_creep
+flow_head knot_head b_inside beam_elem_head beam_node_head
+beam_contact_head ftdel flowrate flowvel j_model j_prop fzoneloc
+cycle thdt thtime unbal grav xmem bou_new knot_near
+liner_element_head liner_node_head liner_contact_head nblock
+nzone fos
 
 b_cons b_dsf b_fix b_gp b_id b_mass b_mat b_ms b_msnext b_next
 b_x b_y b_z b_cent b_xvel b_yvel b_zvel b_vel b_type b_area
@@ -473,45 +473,190 @@ z_discharge
 
 zfd_dataname zfd_dataindex zfd_methodname zfd_methodindex
 zfd_extra zfd_effective zfd_property zfd_radratio zfd_power
-zfd_tolerance zfd_initialize zfd_getdata zfd_reset ")
+zfd_tolerance zfd_initialize zfd_getdata zfd_reset))
+
+(defconst itasca--pfc5-function-list (mapcar 'symbol-name '(ball.ccfd.pos.x ball.ccfd.pos.y ball.ccfd.pos.z   ball.ccfd.force.x ball.ccfd.force.y ball.ccfd.force.z   ball.ccfd.id   ball.ccfd.extra   ball.ccfd.group   ball.ccfd.ball   ball.ccfd.elementmap   ball.ccfd.group.remove   ball.ccfd.isgroup
+
+ball.ccfd.list   ball.ccfd.near   ball.ccfd.find   ball.ccfd.typeid   ball.ccfd.num   ball.ccfd.inbox
+
+element.ccfd.pos.x element.ccfd.pos.y element.ccfd.pos.z   element.ccfd.node.pos.x element.ccfd.node.pos.y element.ccfd.node.pos.z   element.ccfd.vel.x element.ccfd.vel.y element.ccfd.vel.z   element.ccfd.dragforce.x element.ccfd.dragforce.y element.ccfd.dragforce.z   element.ccfd.presgradient.x element.ccfd.presgradient.y element.ccfd.presgradient.z   element.ccfd.vol   element.ccfd.porosity   element.ccfd.viscosity   element.ccfd.density   element.ccfd.face.adjacent   element.ccfd.face.adjacentmap   element.ccfd.edge.adjacentmap   element.ccfd.node.adjacentmap   element.ccfd.group   element.ccfd.isgroup   element.ccfd.group.remove   element.ccfd.extra
+
+element.ccfd.num   element.ccfd.node.num   element.ccfd.face.num   element.ccfd.list   element.ccfd.couplingtime   element.ccfd.iteration   element.ccfd.interval   element.ccfd.find   element.ccfd.inbox   element.ccfd.typeid   element.ccfd.near
+
+ccfd.cycle   ccfd.step   ccfd.age   ccfd.energy
+
+contact.pos.x contact.pos.y contact.pos.z   contact.normal.x contact.normal.y contact.normal.z   contact.shear.x contact.shear.y contact.shear.z   contact.offset.x contact.offset.y contact.offset.z   contact.end1   contact.end2   contact.extra   contact.inhibit   contact.id   contact.active   contact.fid   contact.activate   contact.persist   contact.group   contact.model   contact.prop   contact.inherit   contact.method   contact.isprop   contact.energy   contact.isenergy   contact.isgroup   contact.group.remove   contact.gap
+
+contact.force.local.x contact.force.local.y contact.force.local.z   contact.force.global.x contact.force.global.y contact.force.global.z   contact.to.global   contact.to.local   contact.force.normal   contact.force.shear
+
+contact.list   contact.list.all   contact.num   contact.num.all   contact.typeid   contact.find   contact.energy.sum
+
+fragment.pos.x fragment.pos.y fragment.pos.z   fragment.pos.catalog.x fragment.pos.catalog.y fragment.pos.catalog.z   fragment.vol   fragment.bodynum   fragment.id   fragment.bodymap   fragment.parent   fragment.childmap
+
+fragment.map   fragment.map.cycle   fragment.map.time   fragment.num   fragment.num.cycle   fragment.num.time   fragment.index   fragment.index.cycle   fragment.index.time   fragment.history   fragment.find   fragment.catalog   fragment.catalog.num
+
+contact.thermal.power
+
+dfn.id   dfn.name   dfn.contactmap   dfn.contactmap.all   dfn.prop   dfn.dominance   dfn.template
+
+dfn.fracture.pos.x dfn.fracture.pos.y dfn.fracture.pos.z   dfn.fracture.normal.x dfn.fracture.normal.y dfn.fracture.normal.z   dfn.fracture.isprop   dfn.fracture.prop   dfn.fracture.contactmap   dfn.fracture.contactmap.all   dfn.fracture.interarray   dfn.fracture.dfn   dfn.fracture.extra   dfn.fracture.group   dfn.fracture.group.remove   dfn.fracture.isgroup   dfn.fracture.dip   dfn.fracture.aperture   dfn.fracture.diameter   dfn.fracture.isdisk   dfn.fracture.ddir   dfn.fracture.area   dfn.fracture.len   dfn.fracture.vertexarray   dfn.fracture.id   dfn.fracture.intersect   dfn.fracture.gintersect   dfn.fracture.pointnear
+
+dfn.fracture.typeid   dfn.fracture.maxid   dfn.fracture.find   dfn.fracture.list   dfn.fracture.num
+
+dfn.inter.pos1.x dfn.inter.pos1.y dfn.inter.pos1.z   dfn.inter.pos2.x dfn.inter.pos2.y dfn.inter.pos2.z   dfn.inter.end1   dfn.inter.end2   dfn.inter.len   dfn.inter.npolylinept   dfn.inter.polylinept   dfn.inter.set
+
+dfn.inter.find   dfn.inter.typeid   dfn.inter.list   dfn.inter.num   dfn.inter.maxid
+
+dfn.template.id   dfn.template.name   dfn.template.sizetype   dfn.template.nsizeparam   dfn.template.sizeparam   dfn.template.sizemin   dfn.template.sizemax   dfn.template.orienttype   dfn.template.norientparam   dfn.template.orientparam   dfn.template.dipmin   dfn.template.dipmax   dfn.template.ddirmin   dfn.template.ddirmax   dfn.template.postype   dfn.template.nposparam   dfn.template.posparam   pmin   pmax
+
+dfn.template.list   dfn.template.find   dfn.template.typeid   dfn.template.num   dfn.template.maxid
+
+dfn.list   dfn.find   dfn.typeid   dfn.num   dfn.maxid   dfn.delete   dfn.add   dfn.deletefracture   dfn.fracturenum   dfn.addfracture   dfn.clonefracture   dfn.p10   dfn.geomp10   dfn.geomp20   dfn.geomp21   dfn.centerdensity   dfn.density   dfn.percolation   dfn.geomtrace   dfn.centerdensity   dfn.density   dfn.percolation   dfn.fracturelist   dfn.fracturenear   dfn.fracturesinbox
+
+dfn.vertex.pos.x dfn.vertex.pos.y dfn.vertex.pos.z
+
+dfn.vertex.typeid   dfn.vertex.find   dfn.vertex.num   dfn.vertex.maxid   dfn.vertex.list
+
+dfn.setinter.id   dfn.setinter.name   dfn.setinter.interlist   dfn.setinter.internum   dfn.setinter.path
+
+dfn.setinter.delete   dfn.setinter.find   dfn.setinter.typeid   dfn.setinter.num   dfn.setinter.list   dfn.setinter.maxid
+
+int   float   string   null   vector   index   matrix   tensor   true   false   boolean   map   math.abs   math.and   math.atan   math.atan2   math.cos   math.sin   math.exp   math.ln   math.log   math.max   math.min   math.not   math.or   math.sgn   math.sqrt   math.tan   math.pi   math.degrad   math.round   math.asin   math.acos   math.cross   math.dot   math.mag   math.mag2   math.unit   math.lshift   math.rshift   math.dip.from.normal   math.ddir.from.normal   math.normal.from.dip   math.normal.from.dip.ddir   math.sinh   math.cosh   math.tanh   math.euler.to.aangle   math.aangle.to.euler   math.outer.product   math.ceiling   math.floor   comp.x   comp.y   comp.z   comp.xx   comp.yy   comp.zz   comp.xy   comp.xz   comp.yz   comp   type   type.pointer   type.index   type.pointer.id   type.pointer.name   version.fish.major   version.fish.minor   util.error   util.environment   util.sleep   util.beep   time.clock   time.real   time.cpu   memory.create   memory.delete   memory   array.create   array.delete   array.dim   array.size   array.convert   array.copy   array.command   file.open   file.close   file.read   file.write   file.open.pointer   file.pos   string.token   string.token.type   string.sub   string.char   string.len   string.build   string.tolower   string.toupper   io.in   io.out   io.input   io.dlg.notify   io.dlg.message   io.dlg.in   tensor.prin   tensor.prin.from   tensor.trace   tensor.i2   tensor.j2   tensor.total   list.size   list.find   matrix.ludcmp   matrix.lubksb   matrix.rows   matrix.cols   matrix.identity   matrix.transpose   matrix.inverse   matrix.det   matrix.from.euler   matrix.to.euler   matrix.from.aangle   matrix.to.aangle   struct.check   struct.name   map.add   map.remove   map.has   map.keys   map.value   map.size   safe.eval   safe.command
+
+socket.open   socket.close   socket.write   socket.read   socket.create   socket.delete   socket.write.array   socket.read.array
+
+draw_circle   draw_line   draw_poly   draw_rect   draw_string   fill_circle   fill_poly   fill_rect   line_to   move_to   set_color   set_dash_pattern   set_font   set_line_width   draw_sphere   fill_sphere   set_transparency
+
+geom.set.find   geom.set.create   geom.set.list   geom.set.delete   geom.set.id   geom.set.name   geom.set.maxid   geom.set.num   geom.set.typeid   geom.set.poly.maxid   geom.set.poly.num   geom.set.edge.maxid   geom.set.edge.num   geom.set.node.maxid   geom.set.node.num   geom.set.remove
+
+code.name   version.code.major   version.code.minor   code.debug
+
+label.pos.x label.pos.y label.pos.z   label.end.x label.end.y label.end.z   label.head   label.list   label.next   label.find   label.text   label.arrow   label.create   label.delete   label.typeid   label.num   label.maxid
+
+mail.clear   mail.send   mail.recipient.add   mail.set.body   mail.set.subject   mail.attachment.add   mail.recipient.delete   mail.attachment.delete   mail.set.host   mail.set.account   mail.set.password   mail.set.domain
+
+domain.min.x domain.min.y domain.min.z   domain.max.x domain.max.y domain.max.z   domain.condition   global.gravity.x global.gravity.y global.gravity.z   global.timestep   global.cycle   global.step   global.dim   global.processors   global.deterministic   global.factor.of.safety
+
+range.isin   range.find
+
+table   table.x   table.y   table.size   table.get   table.value   table.clear   table.name   table.id   table.delete   table.create   table.find
+
+geom.edge.dir.x geom.edge.dir.y geom.edge.dir.z   geom.edge.node.pos.x geom.edge.node.pos.y geom.edge.node.pos.z   geom.edge.pos.x geom.edge.pos.y geom.edge.pos.z   geom.edge.find   geom.edge.near   geom.edge.create   geom.edge.list   geom.edge.remove   geom.edge.id   geom.edge.group   geom.edge.group.remove   geom.edge.isgroup   geom.edge.extra   geom.edge.node   geom.edge.next.edge   geom.edge.next.index   geom.edge.start.poly   geom.edge.start.index   geom.edge.typeid   geom.edge.delete
+
+geom.node.pos.x geom.node.pos.y geom.node.pos.z   geom.node.find   geom.node.near   geom.node.create   geom.node.list   geom.node.remove   geom.node.id   geom.node.group   geom.node.group.remove   geom.node.isgroup   geom.node.extra   geom.node.start.edge   geom.node.start.index   geom.node.typeid   geom.node.delete
+
+geom.poly.pos.x geom.poly.pos.y geom.poly.pos.z   geom.poly.find   geom.poly.near   geom.poly.create   geom.poly.add.edge   geom.poly.add.node   geom.poly.close   geom.poly.check   geom.poly.list   geom.poly.remove   geom.poly.id   geom.poly.group   geom.poly.group.remove   geom.poly.isgroup   geom.poly.extra   geom.poly.size   geom.poly.edge   geom.poly.node   geom.poly.next.poly   geom.poly.next.index   geom.poly.area   geom.poly.typeid   geom.poly.delete
+
+user.scalar.value
+
+user.vector.value.x user.vector.value.y user.vector.value.z   user.vector.dip   user.vector.dd   user.vector.ddir
+
+creep.cycle   creep.step   creep.age   creep.solve   creep.timestep.max   creep.timestep.given   creep.safety.factor   creep.timestep
+
+dynamic.cycle   dynamic.step   dynamic.age   dynamic.solve   dynamic.timestep.max   dynamic.timestep.given   dynamic.safety.factor   dynamic.timestep
+
+fluid.cycle   fluid.step   fluid.age   fluid.solve   fluid.energy   fluid.timestep.max   fluid.timestep.given   fluid.safety.factor   fluid.timestep
+
+mech.cycle   mech.step   mech.age   mech.solve   mech.energy   mech.timestep.max   mech.timestep.given   mech.safety.factor   mech.timestep
+
+thermal.cycle   thermal.step   thermal.age   thermal.solve   thermal.energy   thermal.timestep.max   thermal.timestep.given   thermal.safety.factor   thermal.timestep
+
+ball.pos.x ball.pos.y ball.pos.z   ball.disp.x ball.disp.y ball.disp.z   ball.vel.x ball.vel.y ball.vel.z   ball.force.app.x ball.force.app.y ball.force.app.z   ball.force.contact.x ball.force.contact.y ball.force.contact.z   ball.force.unbal.x ball.force.unbal.y ball.force.unbal.z   ball.euler.x ball.euler.y ball.euler.z   ball.delete   ball.id   ball.contactmap   ball.contactmap.all   ball.extra   ball.density   ball.isprop   ball.prop   ball.mass   ball.moi   ball.radius   ball.mass.real   ball.moi.real   ball.fix   ball.rotation   ball.group   ball.create   ball.group.remove   ball.isgroup   ball.contactnum   ball.contactnum.all   ball.fragment
+
+ball.list   ball.near   ball.find   ball.typeid   ball.num   ball.energy   ball.inbox   ball.maxid
+
+brick.delete   brick.id   brick.assemble
+
+brick.list   brick.find   brick.typeid   brick.num   brick.maxid
+
+clump.pos.x clump.pos.y clump.pos.z   clump.disp.x clump.disp.y clump.disp.z   clump.force.app.x clump.force.app.y clump.force.app.z   clump.force.contact.x clump.force.contact.y clump.force.contact.z   clump.force.unbal.x clump.force.unbal.y clump.force.unbal.z   clump.vel.x clump.vel.y clump.vel.z   clump.moi   clump.moi.real   clump.euler.x clump.euler.y clump.euler.z   clump.template.euler.x clump.template.euler.y clump.template.euler.z   clump.moi.prin.x clump.moi.prin.y clump.moi.prin.z   clump.moi.prin.real.x clump.moi.prin.real.y clump.moi.prin.real.z   clump.delete   clump.id   clump.contactmap   clump.contactmap.all   clump.extra   clump.density   clump.prop   clump.mass   clump.mass.real   clump.pebblelist   clump.fix   clump.rotation   clump.group   clump.vol   clump.scalevol   clump.rotate   clump.template   clump.inprin   clump.inglobal   clump.addpebble   clump.deletepebble   clump.calculate   clump.scalesphere   clump.moi.fix   scalefish   clump.group.remove   clump.isgroup   clump.contactnum   clump.contactnum.all   clump.fragment   clump.template.scale
+
+clump.template.delete   id   clump.template.name   clump.template.pebblelist   clump.template.clone   clump.template.addpebble   clump.template.deletepebble   clump.template.vol   clump.template.make   clump.template.moi   clump.template.moi.prin.x clump.template.moi.prin.y clump.template.moi.prin.z   clump.template.origpos.x clump.template.origpos.y clump.template.origpos.z
+
+clump.template.list   clump.template.find   clump.template.typeid   clump.template.num   clump.template.findpebble   clump.template.maxid   findname
+
+clump.list   clump.near   clump.find   clump.typeid   clump.num   clump.energy   clump.inbox   clump.maxid
+
+measure.pos.x measure.pos.y measure.pos.z   measure.stress.full   measure.strainrate.full   measure.delete   measure.id   measure.radius   measure.porosity   measure.coordination   measure.size
+
+measure.list   measure.find   measure.typeid   measure.num   measure.maxid
+
+clump.pebble.pos.x clump.pebble.pos.y clump.pebble.pos.z   clump.pebble.vel.x clump.pebble.vel.y clump.pebble.vel.z   clump.pebble.delete   clump.pebble.id   clump.pebble.clump   clump.pebble.radius   clump.pebble.contactmap   clump.pebble.contactmap.all   clump.pebble.prop   clump.pebble.isprop   clump.pebble.group   clump.pebble.extra   clump.pebble.group.remove   clump.pebble.isgroup   clump.pebble.contactnum   clump.pebble.contactnum.all
+
+list   typeid   number   energy
+
+clump.pebble.list   clump.pebble.near   clump.pebble.find   clump.pebble.typeid   clump.pebble.num   clump.pebble.inbox   clump.pebble.maxid
+
+wall.pos.x wall.pos.y wall.pos.z   wall.vel.x wall.vel.y wall.vel.z   wall.disp.x wall.disp.y wall.disp.z   wall.force.contact.x wall.force.contact.y wall.force.contact.z   wall.rotation.center.x wall.rotation.center.y wall.rotation.center.z   wall.euler.x wall.euler.y wall.euler.z   wall.delete   wall.id   wall.facetlist   wall.addfacet   wall.vertexlist   wall.rotation   wall.prop   wall.contactmap   wall.contactmap.all   wall.extra   wall.group   wall.cutoff   wall.closed   wall.inside   wall.convex   wall.group.remove   wall.isgroup   wall.contactnum   wall.contactnum.all   wall.fragment   wall.name
+
+wall.facet.pos.x wall.facet.pos.y wall.facet.pos.z   wall.facet.conveyor.x wall.facet.conveyor.y wall.facet.conveyor.z   wall.facet.normal.x wall.facet.normal.y wall.facet.normal.z   wall.facet.delete   wall.facet.isprop   wall.facet.prop   wall.facet.vertex   wall.facet.pair   wall.facet.contactmap   wall.facet.contactmap.all   wall.facet.pointnear   wall.facet.wall   wall.facet.id   wall.facet.active   wall.facet.group   wall.facet.extra   wall.facet.group.remove   wall.facet.isgroup   wall.facet.contactnum   wall.facet.contactnum.all
+
+wall.facet.find   wall.facet.near   wall.facet.typeid   wall.facet.num   wall.facet.inbox   wall.facet.list   wall.facet.maxid
+
+wall.list   wall.near   wall.find   wall.typeid   wall.num   wall.energy   wall.inbox   wall.maxid
+
+wall.vertex.vel.x wall.vertex.vel.y wall.vertex.vel.z   wall.vertex.pos.x wall.vertex.pos.y wall.vertex.pos.z   wall.vertex.delete   wall.vertex.facetarray   wall.vertex.id
+
+wall.vertex.find   wall.vertex.near   wall.vertex.typeid   wall.vertex.inbox   wall.vertex.num   wall.vertex.list   wall.vertex.maxid
+
+ball.thermal.id   ball.thermal.contactmap   ball.thermal.contactmap.all   ball.thermal.extra   ball.thermal.isprop   ball.thermal.prop   ball.thermal.fix   ball.thermal.power.app   ball.thermal.power.unbal   ball.thermal.group   ball.thermal.temp   ball.thermal.deltemp   ball.thermal.specificheat   ball.thermal.expansion   ball.thermal.ball   ball.thermal.group.remove   ball.thermal.isgroup   ball.thermal.contactnum   ball.thermal.contactnum.all
+
+ball.thermal.list   ball.thermal.near   ball.thermal.find   ball.thermal.typeid   ball.thermal.num   ball.thermal.energy   ball.thermal.inbox
+
+clump.thermal.id   clump.thermal.contactmap   clump.thermal.contactmap.all   clump.thermal.extra   clump.thermal.prop   clump.thermal.fix   clump.thermal.power.app   clump.thermal.power.unbal   clump.thermal.group   clump.thermal.temp   clump.thermal.deltemp   clump.thermal.specificheat   clump.thermal.expansion   clump.thermal.clump   clump.thermal.pebblelist   clump.thermal.group.remove   clump.thermal.isgroup   clump.thermal.contactnum   clump.thermal.contactnum.all
+
+clump.thermal.list   clump.thermal.near   clump.thermal.find   clump.thermal.typeid   clump.thermal.num   clump.thermal.energy   clump.thermal.inbox
+
+wall.thermal.facet.pos.x wall.thermal.facet.pos.y wall.thermal.facet.pos.z   wall.thermal.facet.isprop   wall.thermal.facet.prop   wall.thermal.facet.contactmap   wall.thermal.facet.contactmap.all   wall.thermal.facet.wall   wall.thermal.facet.id   wall.thermal.facet.facet   wall.thermal.facet.group.remove   wall.thermal.facet.isgroup   wall.thermal.facet.group
+
+wall.thermal.facet.find   wall.thermal.facet.near   wall.thermal.facet.typeid   wall.thermal.facet.num   wall.thermal.facet.inbox   wall.thermal.facet.list
+
+wall.thermal.pos.x wall.thermal.pos.y wall.thermal.pos.z   wall.thermal.id   wall.thermal.contactmap   wall.thermal.contactmap.all   wall.thermal.extra   wall.thermal.prop   wall.thermal.group   wall.thermal.wall   wall.thermal.facetlist   wall.thermal.group.remove   wall.thermal.isgroup
+
+wall.thermal.list   wall.thermal.near   wall.thermal.find   wall.thermal.typeid   wall.thermal.num   wall.thermal.inbox
+
+clump.thermal.pebble.pos.x clump.thermal.pebble.pos.y clump.thermal.pebble.pos.z   clump.thermal.pebble.id   clump.thermal.pebble.clump   clump.thermal.pebble.contactmap   clump.thermal.pebble.contactmap.all   clump.thermal.pebble.isprop   clump.thermal.pebble.prop   clump.thermal.pebble.pebble   clump.thermal.pebble.group   clump.thermal.pebble.group.remove   clump.thermal.pebble.isgroup   clump.thermal.pebble.contactnum   clump.thermal.pebble.contactnum.all
+
+clump.thermal.pebble.list   clump.thermal.pebble.near   clump.thermal.pebble.find   clump.thermal.pebble.typeid   clump.thermal.pebble.num   clump.thermal.pebble.inbox)))
 
 ;; FISH function lists for each mode
 (defconst itasca-mode-keyword-list
-  (split-string itasca-mode-keywords))
+  (mapcar 'symbol-name itasca-mode-keywords))
 
 (defconst itasca-general-function-list
-  (cl-mapcan #'split-string
-             (list itasca-general-functions)))
+  (mapcar 'symbol-name (append itasca-general-functions)))
 (defconst itasca-general-function-regexp
   (regexp-opt itasca-general-function-list 'words))
 
 (defconst itasca-pfc-function-list
-  (cl-mapcan #'split-string
-             (list itasca-general-functions itasca-pfc-functions)))
+  (mapcar 'symbol-name
+             (append itasca-general-functions itasca-pfc-functions)))
 (defconst itasca-pfc-function-regexp
   (regexp-opt itasca-pfc-function-list 'words))
 
-; fix the FLAC one
-
 (defconst itasca-flac3d-function-list
-  (cl-mapcan #'split-string
-             (list itasca-general-functions itasca-new-framework-functions
-                   itasca-flac3d-functions)))
+  (mapcar 'symbol-name
+          (append itasca-general-functions
+                  itasca-new-framework-functions
+                  itasca-flac3d-functions)))
 (defconst itasca-flac3d-function-regexp
   (regexp-opt itasca-flac3d-function-list 'words))
 
 (defconst itasca-udec-function-list
-  (cl-mapcan #'split-string
-             (list itasca-general-functions itasca-udec-functions)))
+  (mapcar 'symbol-name
+             (append itasca-general-functions itasca-udec-functions)))
 (defconst itasca-udec-function-regexp
   (regexp-opt itasca-udec-function-list 'words))
 
 (defconst itasca-3dec-function-list
-  (cl-mapcan #'split-string
-             (list itasca-general-functions itasca-new-framework-functions
+  (mapcar 'symbol-name
+             (append itasca-general-functions itasca-new-framework-functions
                    itasca-3dec-functions)))
 (defconst itasca-3dec-function-regexp
   (regexp-opt itasca-3dec-function-list 'words))
+
+(defconst itasca--pfc5-function-regexp
+  (regexp-opt itasca--pfc5-function-list 'words))
 
 (defconst itasca-constant-regexp
   "[\\^\s\\*\\/\\-\\\\(=]\\([-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?\\)")
@@ -543,7 +688,7 @@ zfd_tolerance zfd_initialize zfd_getdata zfd_reset ")
   (list (lambda ()
           (itasca-setup-mode)
           (set (make-local-variable 'mode-name) "PFC")))
-  "Mode for Itasca PFC 4.0  data files")
+  "Mode for Itasca PFC 4.0 data files")
 
 (define-generic-mode  'itasca-flac-mode
   '(";")
@@ -601,27 +746,27 @@ zfd_tolerance zfd_initialize zfd_getdata zfd_reset ")
           (set (make-local-variable 'mode-name) "3DEC")))
   "Mode for Itasca 3DEC 5.0 data files")
 
-;; major mode support functions
+(define-generic-mode  'itasca-pfc5-mode
+  '(";")
+  itasca-mode-keyword-list
+  (list
+   (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
+   (cons itasca--pfc5-function-regexp 'font-lock-builtin-face)
+   (cons "@[a-zA-Z0-9_]+" 'font-lock-builtin-face)
+   (cons itasca-constant-regexp '(1 'font-lock-constant-face)))
+  '("\\.p3dat$" "\\.p2dat" "\\.p2fis" "\\.p3fis")
+  (list (lambda ()
+          (itasca-setup-mode)
+          (set (make-local-variable 'mode-name) "PFC5")))
+  "Mode for Itasca PFC 5.0  data files")
 
-(defun itasca-copy-call-buffer-filename-as-kill ()
-  "Insert the string: 'call file-name' to the clipboard where
-file-name is the full path and filename of the current buffer.
-Useful when editing a datafile in emacs and loading it into an
-Itasca code."
-  (interactive)
-  (let* ((name (buffer-file-name))
-         (template
-          (if (string-match " " name)
-              "call \"%s\""
-            "call %s"))
-         (s (format template name)))
-    (kill-new s)
-    (message "Copied: %s to clipboard" s)))
+
+;; major mode support functions
 
 ;; This function works but there is a minor corner case that is
 ;; broken. When on a case statement if the previous (non-whitespace)
 ;; line is a caseof we do not want to un-indent
-(defun fish-indent-line ()
+(defun itasca--fish-indent-line ()
   "Indent current line as FISH code"
   (interactive)
   (beginning-of-line)
@@ -696,11 +841,49 @@ of the next FISH function definition"
   (local-set-key (kbd "C-c M-c") 'itasca-copy-call-buffer-filename-as-kill)
   (local-set-key (kbd "C-M-a") 'itasca-begining-of-defun-function)
   (local-set-key (kbd "C-M-e") 'itasca-end-of-defun-function)
-  (set (make-local-variable 'indent-line-function) 'fish-indent-line)
+  (set (make-local-variable 'indent-line-function) 'itasca--fish-indent-line)
   (set (make-local-variable 'imenu-case-fold-search) t)
   (set (make-local-variable  'imenu-generic-expression)
        (list (list nil itasca-defun-start-regexp 1)))
   (itasca-change-syntax-table))
+
+
+(defun itasca-copy-call-buffer-filename-as-kill ()
+  "Insert the string: 'call file-name' to the clipboard where
+file-name is the full path and filename of the current buffer.
+Useful when editing a datafile in emacs and loading it into an
+Itasca code."
+  (interactive)
+  (let* ((name (buffer-file-name))
+         (template
+          (if (string-match " " name)
+              "call \"%s\""
+            "call %s"))
+         (s (format template name)))
+    (kill-new s)
+    (message "Copied: %s to clipboard" s)))
+
+(defun itasca-python-copy-as-execfile ()
+  "Insert the string: 'python execfile('file-name')' to the kill
+ring where file-name is the full path and filename of the current
+buffer. Useful when editing a datafile in emacs and loading it
+into an Itasca code."
+  (interactive)
+  (let* ((name (buffer-file-name))
+         (template "python execfile(r'%s')")
+         (s (format template name)))
+    (kill-new s)
+    (message "Copied: %s to clipboard" s)))
+
+(defun itasca-fish-binary-file-p (filename)
+  (interactive)
+  "Returns true if a given file is a FISH binary file."
+  (eq 178278912
+      (cdr (assoc :fc
+                  (bindat-unpack '((:fc u32r) (:dummy u32r))
+                                 (with-temp-buffer
+                                   (insert-file-literally filename)
+                                   (string-to-unibyte (buffer-string))))))))
 
 ;;; tests
 
@@ -874,192 +1057,4 @@ def map_ret_val
 end
 "))
 
-(defconst itasca--pfc5-function-list (split-string "ball.ccfd.pos.x ball.ccfd.pos.y ball.ccfd.pos.z   ball.ccfd.force.x ball.ccfd.force.y ball.ccfd.force.z   ball.ccfd.id   ball.ccfd.extra   ball.ccfd.group   ball.ccfd.ball   ball.ccfd.elementmap   ball.ccfd.group.remove   ball.ccfd.isgroup
-
-ball.ccfd.list   ball.ccfd.near   ball.ccfd.find   ball.ccfd.typeid   ball.ccfd.num   ball.ccfd.inbox
-
-element.ccfd.pos.x element.ccfd.pos.y element.ccfd.pos.z   element.ccfd.node.pos.x element.ccfd.node.pos.y element.ccfd.node.pos.z   element.ccfd.vel.x element.ccfd.vel.y element.ccfd.vel.z   element.ccfd.dragforce.x element.ccfd.dragforce.y element.ccfd.dragforce.z   element.ccfd.presgradient.x element.ccfd.presgradient.y element.ccfd.presgradient.z   element.ccfd.vol   element.ccfd.porosity   element.ccfd.viscosity   element.ccfd.density   element.ccfd.face.adjacent   element.ccfd.face.adjacentmap   element.ccfd.edge.adjacentmap   element.ccfd.node.adjacentmap   element.ccfd.group   element.ccfd.isgroup   element.ccfd.group.remove   element.ccfd.extra
-
-element.ccfd.num   element.ccfd.node.num   element.ccfd.face.num   element.ccfd.list   element.ccfd.couplingtime   element.ccfd.iteration   element.ccfd.interval   element.ccfd.find   element.ccfd.inbox   element.ccfd.typeid   element.ccfd.near
-
-ccfd.cycle   ccfd.step   ccfd.age   ccfd.energy
-
-contact.pos.x contact.pos.y contact.pos.z   contact.normal.x contact.normal.y contact.normal.z   contact.shear.x contact.shear.y contact.shear.z   contact.offset.x contact.offset.y contact.offset.z   contact.end1   contact.end2   contact.extra   contact.inhibit   contact.id   contact.active   contact.fid   contact.activate   contact.persist   contact.group   contact.model   contact.prop   contact.inherit   contact.method   contact.isprop   contact.energy   contact.isenergy   contact.isgroup   contact.group.remove   contact.gap
-
-contact.force.local.x contact.force.local.y contact.force.local.z   contact.force.global.x contact.force.global.y contact.force.global.z   contact.to.global   contact.to.local   contact.force.normal   contact.force.shear
-
-contact.list   contact.list.all   contact.num   contact.num.all   contact.typeid   contact.find   contact.energy.sum
-
-fragment.pos.x fragment.pos.y fragment.pos.z   fragment.pos.catalog.x fragment.pos.catalog.y fragment.pos.catalog.z   fragment.vol   fragment.bodynum   fragment.id   fragment.bodymap   fragment.parent   fragment.childmap
-
-fragment.map   fragment.map.cycle   fragment.map.time   fragment.num   fragment.num.cycle   fragment.num.time   fragment.index   fragment.index.cycle   fragment.index.time   fragment.history   fragment.find   fragment.catalog   fragment.catalog.num
-
-contact.thermal.power
-
-dfn.id   dfn.name   dfn.contactmap   dfn.contactmap.all   dfn.prop   dfn.dominance   dfn.template
-
-dfn.fracture.pos.x dfn.fracture.pos.y dfn.fracture.pos.z   dfn.fracture.normal.x dfn.fracture.normal.y dfn.fracture.normal.z   dfn.fracture.isprop   dfn.fracture.prop   dfn.fracture.contactmap   dfn.fracture.contactmap.all   dfn.fracture.interarray   dfn.fracture.dfn   dfn.fracture.extra   dfn.fracture.group   dfn.fracture.group.remove   dfn.fracture.isgroup   dfn.fracture.dip   dfn.fracture.aperture   dfn.fracture.diameter   dfn.fracture.isdisk   dfn.fracture.ddir   dfn.fracture.area   dfn.fracture.len   dfn.fracture.vertexarray   dfn.fracture.id   dfn.fracture.intersect   dfn.fracture.gintersect   dfn.fracture.pointnear
-
-dfn.fracture.typeid   dfn.fracture.maxid   dfn.fracture.find   dfn.fracture.list   dfn.fracture.num
-
-dfn.inter.pos1.x dfn.inter.pos1.y dfn.inter.pos1.z   dfn.inter.pos2.x dfn.inter.pos2.y dfn.inter.pos2.z   dfn.inter.end1   dfn.inter.end2   dfn.inter.len   dfn.inter.npolylinept   dfn.inter.polylinept   dfn.inter.set
-
-dfn.inter.find   dfn.inter.typeid   dfn.inter.list   dfn.inter.num   dfn.inter.maxid
-
-dfn.template.id   dfn.template.name   dfn.template.sizetype   dfn.template.nsizeparam   dfn.template.sizeparam   dfn.template.sizemin   dfn.template.sizemax   dfn.template.orienttype   dfn.template.norientparam   dfn.template.orientparam   dfn.template.dipmin   dfn.template.dipmax   dfn.template.ddirmin   dfn.template.ddirmax   dfn.template.postype   dfn.template.nposparam   dfn.template.posparam   pmin   pmax
-
-dfn.template.list   dfn.template.find   dfn.template.typeid   dfn.template.num   dfn.template.maxid
-
-dfn.list   dfn.find   dfn.typeid   dfn.num   dfn.maxid   dfn.delete   dfn.add   dfn.deletefracture   dfn.fracturenum   dfn.addfracture   dfn.clonefracture   dfn.p10   dfn.geomp10   dfn.geomp20   dfn.geomp21   dfn.centerdensity   dfn.density   dfn.percolation   dfn.geomtrace   dfn.centerdensity   dfn.density   dfn.percolation   dfn.fracturelist   dfn.fracturenear   dfn.fracturesinbox
-
-dfn.vertex.pos.x dfn.vertex.pos.y dfn.vertex.pos.z
-
-dfn.vertex.typeid   dfn.vertex.find   dfn.vertex.num   dfn.vertex.maxid   dfn.vertex.list
-
-dfn.setinter.id   dfn.setinter.name   dfn.setinter.interlist   dfn.setinter.internum   dfn.setinter.path
-
-dfn.setinter.delete   dfn.setinter.find   dfn.setinter.typeid   dfn.setinter.num   dfn.setinter.list   dfn.setinter.maxid
-
-int   float   string   null   vector   index   matrix   tensor   true   false   boolean   map   math.abs   math.and   math.atan   math.atan2   math.cos   math.sin   math.exp   math.ln   math.log   math.max   math.min   math.not   math.or   math.sgn   math.sqrt   math.tan   math.pi   math.degrad   math.round   math.asin   math.acos   math.cross   math.dot   math.mag   math.mag2   math.unit   math.lshift   math.rshift   math.dip.from.normal   math.ddir.from.normal   math.normal.from.dip   math.normal.from.dip.ddir   math.sinh   math.cosh   math.tanh   math.euler.to.aangle   math.aangle.to.euler   math.outer.product   math.ceiling   math.floor   comp.x   comp.y   comp.z   comp.xx   comp.yy   comp.zz   comp.xy   comp.xz   comp.yz   comp   type   type.pointer   type.index   type.pointer.id   type.pointer.name   version.fish.major   version.fish.minor   util.error   util.environment   util.sleep   util.beep   time.clock   time.real   time.cpu   memory.create   memory.delete   memory   array.create   array.delete   array.dim   array.size   array.convert   array.copy   array.command   file.open   file.close   file.read   file.write   file.open.pointer   file.pos   string.token   string.token.type   string.sub   string.char   string.len   string.build   string.tolower   string.toupper   io.in   io.out   io.input   io.dlg.notify   io.dlg.message   io.dlg.in   tensor.prin   tensor.prin.from   tensor.trace   tensor.i2   tensor.j2   tensor.total   list.size   list.find   matrix.ludcmp   matrix.lubksb   matrix.rows   matrix.cols   matrix.identity   matrix.transpose   matrix.inverse   matrix.det   matrix.from.euler   matrix.to.euler   matrix.from.aangle   matrix.to.aangle   struct.check   struct.name   map.add   map.remove   map.has   map.keys   map.value   map.size   safe.eval   safe.command
-
-socket.open   socket.close   socket.write   socket.read   socket.create   socket.delete   socket.write.array   socket.read.array
-
-draw_circle   draw_line   draw_poly   draw_rect   draw_string   fill_circle   fill_poly   fill_rect   line_to   move_to   set_color   set_dash_pattern   set_font   set_line_width   draw_sphere   fill_sphere   set_transparency
-
-geom.set.find   geom.set.create   geom.set.list   geom.set.delete   geom.set.id   geom.set.name   geom.set.maxid   geom.set.num   geom.set.typeid   geom.set.poly.maxid   geom.set.poly.num   geom.set.edge.maxid   geom.set.edge.num   geom.set.node.maxid   geom.set.node.num   geom.set.remove
-
-code.name   version.code.major   version.code.minor   code.debug
-
-label.pos.x label.pos.y label.pos.z   label.end.x label.end.y label.end.z   label.head   label.list   label.next   label.find   label.text   label.arrow   label.create   label.delete   label.typeid   label.num   label.maxid
-
-mail.clear   mail.send   mail.recipient.add   mail.set.body   mail.set.subject   mail.attachment.add   mail.recipient.delete   mail.attachment.delete   mail.set.host   mail.set.account   mail.set.password   mail.set.domain
-
-domain.min.x domain.min.y domain.min.z   domain.max.x domain.max.y domain.max.z   domain.condition   global.gravity.x global.gravity.y global.gravity.z   global.timestep   global.cycle   global.step   global.dim   global.processors   global.deterministic   global.factor.of.safety
-
-RandomLibrary   RandomLibrary
-
-range.isin   range.find
-
-table   table.x   table.y   table.size   table.get   table.value   table.clear   table.name   table.id   table.delete   table.create   table.find
-
-geom.edge.dir.x geom.edge.dir.y geom.edge.dir.z   geom.edge.node.pos.x geom.edge.node.pos.y geom.edge.node.pos.z   geom.edge.pos.x geom.edge.pos.y geom.edge.pos.z   geom.edge.find   geom.edge.near   geom.edge.create   geom.edge.list   geom.edge.remove   geom.edge.id   geom.edge.group   geom.edge.group.remove   geom.edge.isgroup   geom.edge.extra   geom.edge.node   geom.edge.next.edge   geom.edge.next.index   geom.edge.start.poly   geom.edge.start.index   geom.edge.typeid   geom.edge.delete
-
-geom.node.pos.x geom.node.pos.y geom.node.pos.z   geom.node.find   geom.node.near   geom.node.create   geom.node.list   geom.node.remove   geom.node.id   geom.node.group   geom.node.group.remove   geom.node.isgroup   geom.node.extra   geom.node.start.edge   geom.node.start.index   geom.node.typeid   geom.node.delete
-
-geom.poly.pos.x geom.poly.pos.y geom.poly.pos.z   geom.poly.find   geom.poly.near   geom.poly.create   geom.poly.add.edge   geom.poly.add.node   geom.poly.close   geom.poly.check   geom.poly.list   geom.poly.remove   geom.poly.id   geom.poly.group   geom.poly.group.remove   geom.poly.isgroup   geom.poly.extra   geom.poly.size   geom.poly.edge   geom.poly.node   geom.poly.next.poly   geom.poly.next.index   geom.poly.area   geom.poly.typeid   geom.poly.delete
-
-user.scalar.value
-
-user.vector.value.x user.vector.value.y user.vector.value.z   user.vector.dip   user.vector.dd   user.vector.ddir
-
-creep.cycle   creep.step   creep.age   creep.solve   creep.timestep.max   creep.timestep.given   creep.safety.factor   creep.timestep
-
-dynamic.cycle   dynamic.step   dynamic.age   dynamic.solve   dynamic.timestep.max   dynamic.timestep.given   dynamic.safety.factor   dynamic.timestep
-
-fluid.cycle   fluid.step   fluid.age   fluid.solve   fluid.energy   fluid.timestep.max   fluid.timestep.given   fluid.safety.factor   fluid.timestep
-
-mech.cycle   mech.step   mech.age   mech.solve   mech.energy   mech.timestep.max   mech.timestep.given   mech.safety.factor   mech.timestep
-
-thermal.cycle   thermal.step   thermal.age   thermal.solve   thermal.energy   thermal.timestep.max   thermal.timestep.given   thermal.safety.factor   thermal.timestep
-
-ball.pos.x ball.pos.y ball.pos.z   ball.disp.x ball.disp.y ball.disp.z   ball.vel.x ball.vel.y ball.vel.z   ball.force.app.x ball.force.app.y ball.force.app.z   ball.force.contact.x ball.force.contact.y ball.force.contact.z   ball.force.unbal.x ball.force.unbal.y ball.force.unbal.z   ball.euler.x ball.euler.y ball.euler.z   ball.delete   ball.id   ball.contactmap   ball.contactmap.all   ball.extra   ball.density   ball.isprop   ball.prop   ball.mass   ball.moi   ball.radius   ball.mass.real   ball.moi.real   ball.fix   ball.rotation   ball.group   ball.create   ball.group.remove   ball.isgroup   ball.contactnum   ball.contactnum.all   ball.fragment
-
-ball.list   ball.near   ball.find   ball.typeid   ball.num   ball.energy   ball.inbox   ball.maxid
-
-brick.delete   brick.id   brick.assemble
-
-brick.list   brick.find   brick.typeid   brick.num   brick.maxid
-
-clump.pos.x clump.pos.y clump.pos.z   clump.disp.x clump.disp.y clump.disp.z   clump.force.app.x clump.force.app.y clump.force.app.z   clump.force.contact.x clump.force.contact.y clump.force.contact.z   clump.force.unbal.x clump.force.unbal.y clump.force.unbal.z   clump.vel.x clump.vel.y clump.vel.z   clump.moi   clump.moi.real   clump.euler.x clump.euler.y clump.euler.z   clump.template.euler.x clump.template.euler.y clump.template.euler.z   clump.moi.prin.x clump.moi.prin.y clump.moi.prin.z   clump.moi.prin.real.x clump.moi.prin.real.y clump.moi.prin.real.z   clump.delete   clump.id   clump.contactmap   clump.contactmap.all   clump.extra   clump.density   clump.prop   clump.mass   clump.mass.real   clump.pebblelist   clump.fix   clump.rotation   clump.group   clump.vol   clump.scalevol   clump.rotate   clump.template   clump.inprin   clump.inglobal   clump.addpebble   clump.deletepebble   clump.calculate   clump.scalesphere   clump.moi.fix   scalefish   clump.group.remove   clump.isgroup   clump.contactnum   clump.contactnum.all   clump.fragment   clump.template.scale
-
-clump.template.delete   id   clump.template.name   clump.template.pebblelist   clump.template.clone   clump.template.addpebble   clump.template.deletepebble   clump.template.vol   clump.template.make   clump.template.moi   clump.template.moi.prin.x clump.template.moi.prin.y clump.template.moi.prin.z   clump.template.origpos.x clump.template.origpos.y clump.template.origpos.z
-
-clump.template.list   clump.template.find   clump.template.typeid   clump.template.num   clump.template.findpebble   clump.template.maxid   findname
-
-clump.list   clump.near   clump.find   clump.typeid   clump.num   clump.energy   clump.inbox   clump.maxid
-
-measure.pos.x measure.pos.y measure.pos.z   measure.stress.full   measure.strainrate.full   measure.delete   measure.id   measure.radius   measure.porosity   measure.coordination   measure.size
-
-measure.list   measure.find   measure.typeid   measure.num   measure.maxid
-
-clump.pebble.pos.x clump.pebble.pos.y clump.pebble.pos.z   clump.pebble.vel.x clump.pebble.vel.y clump.pebble.vel.z   clump.pebble.delete   clump.pebble.id   clump.pebble.clump   clump.pebble.radius   clump.pebble.contactmap   clump.pebble.contactmap.all   clump.pebble.prop   clump.pebble.isprop   clump.pebble.group   clump.pebble.extra   clump.pebble.group.remove   clump.pebble.isgroup   clump.pebble.contactnum   clump.pebble.contactnum.all
-
-list   typeid   number   energy
-
-clump.pebble.list   clump.pebble.near   clump.pebble.find   clump.pebble.typeid   clump.pebble.num   clump.pebble.inbox   clump.pebble.maxid
-
-wall.pos.x wall.pos.y wall.pos.z   wall.vel.x wall.vel.y wall.vel.z   wall.disp.x wall.disp.y wall.disp.z   wall.force.contact.x wall.force.contact.y wall.force.contact.z   wall.rotation.center.x wall.rotation.center.y wall.rotation.center.z   wall.euler.x wall.euler.y wall.euler.z   wall.delete   wall.id   wall.facetlist   wall.addfacet   wall.vertexlist   wall.rotation   wall.prop   wall.contactmap   wall.contactmap.all   wall.extra   wall.group   wall.cutoff   wall.closed   wall.inside   wall.convex   wall.group.remove   wall.isgroup   wall.contactnum   wall.contactnum.all   wall.fragment   wall.name
-
-wall.facet.pos.x wall.facet.pos.y wall.facet.pos.z   wall.facet.conveyor.x wall.facet.conveyor.y wall.facet.conveyor.z   wall.facet.normal.x wall.facet.normal.y wall.facet.normal.z   wall.facet.delete   wall.facet.isprop   wall.facet.prop   wall.facet.vertex   wall.facet.pair   wall.facet.contactmap   wall.facet.contactmap.all   wall.facet.pointnear   wall.facet.wall   wall.facet.id   wall.facet.active   wall.facet.group   wall.facet.extra   wall.facet.group.remove   wall.facet.isgroup   wall.facet.contactnum   wall.facet.contactnum.all
-
-wall.facet.find   wall.facet.near   wall.facet.typeid   wall.facet.num   wall.facet.inbox   wall.facet.list   wall.facet.maxid
-
-wall.list   wall.near   wall.find   wall.typeid   wall.num   wall.energy   wall.inbox   wall.maxid
-
-wall.vertex.vel.x wall.vertex.vel.y wall.vertex.vel.z   wall.vertex.pos.x wall.vertex.pos.y wall.vertex.pos.z   wall.vertex.delete   wall.vertex.facetarray   wall.vertex.id
-
-wall.vertex.find   wall.vertex.near   wall.vertex.typeid   wall.vertex.inbox   wall.vertex.num   wall.vertex.list   wall.vertex.maxid
-
-ball.thermal.id   ball.thermal.contactmap   ball.thermal.contactmap.all   ball.thermal.extra   ball.thermal.isprop   ball.thermal.prop   ball.thermal.fix   ball.thermal.power.app   ball.thermal.power.unbal   ball.thermal.group   ball.thermal.temp   ball.thermal.deltemp   ball.thermal.specificheat   ball.thermal.expansion   ball.thermal.ball   ball.thermal.group.remove   ball.thermal.isgroup   ball.thermal.contactnum   ball.thermal.contactnum.all
-
-ball.thermal.list   ball.thermal.near   ball.thermal.find   ball.thermal.typeid   ball.thermal.num   ball.thermal.energy   ball.thermal.inbox
-
-clump.thermal.id   clump.thermal.contactmap   clump.thermal.contactmap.all   clump.thermal.extra   clump.thermal.prop   clump.thermal.fix   clump.thermal.power.app   clump.thermal.power.unbal   clump.thermal.group   clump.thermal.temp   clump.thermal.deltemp   clump.thermal.specificheat   clump.thermal.expansion   clump.thermal.clump   clump.thermal.pebblelist   clump.thermal.group.remove   clump.thermal.isgroup   clump.thermal.contactnum   clump.thermal.contactnum.all
-
-clump.thermal.list   clump.thermal.near   clump.thermal.find   clump.thermal.typeid   clump.thermal.num   clump.thermal.energy   clump.thermal.inbox
-
-wall.thermal.facet.pos.x wall.thermal.facet.pos.y wall.thermal.facet.pos.z   wall.thermal.facet.isprop   wall.thermal.facet.prop   wall.thermal.facet.contactmap   wall.thermal.facet.contactmap.all   wall.thermal.facet.wall   wall.thermal.facet.id   wall.thermal.facet.facet   wall.thermal.facet.group.remove   wall.thermal.facet.isgroup   wall.thermal.facet.group
-
-wall.thermal.facet.find   wall.thermal.facet.near   wall.thermal.facet.typeid   wall.thermal.facet.num   wall.thermal.facet.inbox   wall.thermal.facet.list
-
-wall.thermal.pos.x wall.thermal.pos.y wall.thermal.pos.z   wall.thermal.id   wall.thermal.contactmap   wall.thermal.contactmap.all   wall.thermal.extra   wall.thermal.prop   wall.thermal.group   wall.thermal.wall   wall.thermal.facetlist   wall.thermal.group.remove   wall.thermal.isgroup
-
-wall.thermal.list   wall.thermal.near   wall.thermal.find   wall.thermal.typeid   wall.thermal.num   wall.thermal.inbox
-
-clump.thermal.pebble.pos.x clump.thermal.pebble.pos.y clump.thermal.pebble.pos.z   clump.thermal.pebble.id   clump.thermal.pebble.clump   clump.thermal.pebble.contactmap   clump.thermal.pebble.contactmap.all   clump.thermal.pebble.isprop   clump.thermal.pebble.prop   clump.thermal.pebble.pebble   clump.thermal.pebble.group   clump.thermal.pebble.group.remove   clump.thermal.pebble.isgroup   clump.thermal.pebble.contactnum   clump.thermal.pebble.contactnum.all
-
-clump.thermal.pebble.list   clump.thermal.pebble.near   clump.thermal.pebble.find   clump.thermal.pebble.typeid   clump.thermal.pebble.num   clump.thermal.pebble.inbox
-"))
-
-(defconst itasca--pfc5-function-regexp
-  (regexp-opt itasca--pfc5-function-list 'words))
-
-(define-generic-mode  'itasca-pfc5-mode
-  '(";")
-  itasca-mode-keyword-list
-  (list
-   (cons itasca-defun-start-regexp '(1 font-lock-function-name-face))
-   (cons itasca--pfc5-function-regexp 'font-lock-builtin-face)
-   (cons "@[a-zA-Z0-9_]+" 'font-lock-builtin-face)
-   (cons itasca-constant-regexp '(1 'font-lock-constant-face)))
-  '("\\.p3dat$" "\\.p2dat" "\\.p2fis" "\\.p3fis")
-  (list (lambda ()
-          (itasca-setup-mode)
-          (set (make-local-variable 'mode-name) "PFC5")))
-  "Mode for Itasca PFC 5.0  data files")
-
-
-
 (provide 'itasca)
-
-(defun itasca-python-copy-as-execfile ()
-  "Insert the string: 'python execfile('file-name')' to the clipboard where
-file-name is the full path and filename of the current buffer.
-Useful when editing a datafile in emacs and loading it into an
-Itasca code."
-  (interactive)
-  (let* ((name (buffer-file-name))
-         (template "python execfile(r'%s')")
-         (s (format template name)))
-    (kill-new s)
-    (message "Copied: %s to clipboard" s)))
-
-(defun itasca-fish-binary-file-p (filename)
-  (interactive)
-  "Returns true if a given file is a FISH binary file."
-  (eq 178278912
-      (cdr (assoc :fc
-                  (bindat-unpack '((:fc u32r) (:dummy u32r))
-                                 (with-temp-buffer
-                                   (insert-file-literally filename)
-                                   (string-to-unibyte (buffer-string))))))))
