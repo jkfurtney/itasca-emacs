@@ -1,3 +1,5 @@
+[![MELPA](http://melpa.org/packages/itasca-badge.svg)](http://melpa.org/#/itasca)
+
 ## Emacs modes for editing Itasca software data files.
 
 FLAC FLAC3D UDEC 3DEC PFC www.itascacg.com/software
