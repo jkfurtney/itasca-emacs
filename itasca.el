@@ -660,6 +660,9 @@ clump.thermal.pebble.list   clump.thermal.pebble.near   clump.thermal.pebble.fin
 
 (defconst itasca-constant-regexp
   "[\\^\s\\*\\/\\-\\\\(=]\\([-+]?[0-9]*\\.?[0-9]+\\([eE][-+]?[0-9]+\\)?\\)")
+(defconst itasca-defun-start-regexp "^\s*def\s+\\([a-zA-Z_0-9]+\\)")
+(defconst itasca-defun-end-regexp "^ *end\\( +\\|;+\\|$\\)")
+
 
 ; define the modes
 (define-generic-mode 'itasca-general-mode
@@ -804,9 +807,6 @@ clump.thermal.pebble.list   clump.thermal.pebble.near   clump.thermal.pebble.fin
            (indent-line-to cur-indent)
          (indent-line-to 0))))))
 
-(defconst itasca-defun-start-regexp "^\s*def\s+\\([a-zA-Z_0-9]+\\)")
-(defconst itasca-defun-end-regexp "^ *end\\( +\\|;+\\|$\\)")
-
 (defun itasca-begining-of-defun-function ()
   "Move point up to the current FISH function definition line. If
 point is on a function definition line jump up to the next
@@ -874,16 +874,6 @@ into an Itasca code."
          (s (format template name)))
     (kill-new s)
     (message "Copied: %s to clipboard" s)))
-
-(defun itasca-fish-binary-file-p (filename)
-  (interactive)
-  "Returns true if a given file is a FISH binary file."
-  (eq 178278912
-      (cdr (assoc :fc
-                  (bindat-unpack '((:fc u32r) (:dummy u32r))
-                                 (with-temp-buffer
-                                   (insert-file-literally filename)
-                                   (string-to-unibyte (buffer-string))))))))
 
 ;;; tests
 
