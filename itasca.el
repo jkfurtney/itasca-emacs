@@ -773,9 +773,9 @@ clump.thermal.pebble.list   clump.thermal.pebble.near   clump.thermal.pebble.fin
   "Indent current line as FISH code"
   (interactive)
   (beginning-of-line)
-  (let ((re-kw-up "^[ \t]*\\(def\\|define\\|loop\\|command\\|if\\|case_of\\|caseof\\|section\\|case\\|else\\)")
-        (re-kw-down "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\|case[^_o]\\|else\\)")
-        (re-kw-down2 "^[ \t]*\\(end\\|end_loop\\|endloop\\|end_command\\|endcommand\\|end_if\\|endif\\|end_case\\|endcase\\|end_section\\|endsection\\)"))
+  (let ((re-kw-up "^[ \t]*\\(def\\|define\\|loop\\|command\\|if\\|case_?of\\|section\\|case\\|else\\)")
+        (re-kw-down "^[ \t]*\\(end[^a-zA-Z_0-9]\\|end_?loop\\|end_?command\\|end_?if\\|end_?case\\|end_?section\\|case[^_o]\\|else\\)")
+        (re-kw-down2 "^[ \t]*\\(end[^a-zA-Z_0-9]\\|end_?loop\\|end_?command\\|end_?if\\|end_?case\\|end_?section\\)"))
    (if (bobp)
        (indent-line-to 0)
      (let ((not-indented t) (indent-width 2) cur-indent)
@@ -1045,6 +1045,45 @@ def map_ret_val
     other=thing
   endcase
 end
+"))
+
+(ert-deftest itasca--indentation-test-end-keyword ()
+    (itasca--indentation-test "
+def my_func
+if a>1
+endpoint=10
+else
+endpoint=1
+endif
+if a>1
+endpoint=10
+else
+endpoint=1
+end_if
+end;
+;comment
+def test1
+a=10
+end ; comment
+"
+
+"
+def my_func
+  if a>1
+    endpoint=10
+  else
+    endpoint=1
+  endif
+  if a>1
+    endpoint=10
+  else
+    endpoint=1
+  end_if
+end;
+;comment
+def test1
+  a=10
+end ; comment
 "))
 
 (provide 'itasca)
