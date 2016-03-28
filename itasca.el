@@ -20,13 +20,10 @@
 ;; ---------------------------------------------------
 ;; FLAC FLAC3D UDEC 3DEC PFC www.itascacg.com/software
 ;;
-;; Copy this file somewhere on the emacs load-path and add
-;; (require 'itasca) to your .emacs file. (Or install via melpa.)
-;;
-;; This package defines five emacs major modes for editing Itasca
-;; software data files. The focus is on making FISH programming
-;; easier. Code specific keyword and FISH intrinsic highlighting is
-;; provided along with indenting and code navigation support.
+;; This package defines Emacs major modes for editing Itasca software
+;; data files. The focus is on making FISH programming easier. Code
+;; specific keyword and FISH intrinsic highlighting is provided along
+;; with indenting and code navigation support.
 
 ;; These file extensions are mapped to the following major modes:
 ;;
@@ -58,7 +55,7 @@
 
 ;; Code navigation, auto-complete and snippets are provided. For a
 ;; detailed introduction see:
-;; https://github.com/jkfurtney/itasca-emacs/blob/master/README.md
+;; https://github.com/jkfurtney/itasca-emacs/
 ;;
 ;; to do:
 ;; redo FLAC mode
@@ -68,6 +65,7 @@
 
 (require 'generic-x)
 (require 'ert)
+(require 'thingatpt)
 
 (defconst itasca-mode-keywords '(def define loop command if
 case_of caseof section end end_loop endloop end_command
@@ -841,6 +839,7 @@ of the next FISH function definition"
   (local-set-key (kbd "C-c M-c") 'itasca-copy-call-buffer-filename-as-kill)
   (local-set-key (kbd "C-M-a") 'itasca-begining-of-defun-function)
   (local-set-key (kbd "C-M-e") 'itasca-end-of-defun-function)
+  (local-set-key (kbd "M-.") 'itasca-find-fish-function-at-point)
   (set (make-local-variable 'indent-line-function) 'itasca--fish-indent-line)
   (set (make-local-variable 'imenu-case-fold-search) t)
   (set (make-local-variable  'imenu-generic-expression)
@@ -874,6 +873,83 @@ into an Itasca code."
          (s (format template name)))
     (kill-new s)
     (message "Copied: %s to clipboard" s)))
+
+
+(defvar itasca-search-for-fish-functions-in-current-directory t
+  "When this value is not nil all files in the current directory
+  matching `itasca-file-regexp' are opened before searching for
+  FISH function definitions.")
+
+(defvar itasca-file-regexp
+  "\\.[upf]?dat$\\|\\.3ddat$\\|\\.fis$\\|\\.f[23]dat$\\|\\.p[23]dat$"
+"This regular expression is used by `itasca-open-other-files' to
+determine which files are itasca data files.")
+
+(defun itasca-open-other-files ()
+  "Open other files in the current directory which match
+`itasca-file-regexp'"
+  (interactive)
+  (message "Opening other itasca datafiles in this directory.")
+  (dolist (file (directory-files (file-name-directory (buffer-file-name))))
+    (when (string-match itasca-file-regexp file)
+      (find-file-noselect file))))
+
+(defun itasca--get-itasca-buffers ()
+  "Return the list of buffers using an itasca major mode."
+  (interactive)
+  (let* (itasca-buffer-list)
+    (dolist (buffer (buffer-list))
+      (when
+        (string-prefix-p
+         "itasca"
+         (symbol-name (with-current-buffer buffer major-mode)))
+        (push buffer itasca-buffer-list)))
+    ; reverse the list so the current buffer is first
+    (reverse itasca-buffer-list)))
+
+(defun itasca--find-fish-function-at-point-in-buffer (function-name buffer)
+  (interactive)
+  (let ((line-num -1)
+        (step 0))
+    (with-current-buffer buffer
+      (goto-char (point-min))
+      (while
+          (and (= (forward-line step) 0)
+               (= line-num -1))
+        (when (= step 0) (setq step 1))
+        (when (looking-at itasca-defun-start-regexp)
+          (when (string= (buffer-substring (match-beginning 1) (match-end 1))
+                         function-name)
+            (setq line-num (line-number-at-pos))))))
+    (if (equal line-num -1)
+        nil
+      (cons buffer line-num))))
+
+(defun itasca-find-fish-function-at-point ()
+  "Jump to the definition of FISH function at point. All buffers
+using an itasca major mode are searched. If
+`itasca-search-for-fish-functions-in-current-directory' is not
+nil open all itasca code files in the current directory before
+searching. `itasca-file-regexp' is used to determine if a file is
+an itasca file."
+  (interactive)
+  (when itasca-search-for-fish-functions-in-current-directory
+    (itasca-open-other-files))
+  (let ((itasca-buffers (itasca--get-itasca-buffers))
+        (function-name (thing-at-point 'word))
+        trial-buffer result)
+    (save-excursion
+      (while (and itasca-buffers (not result))
+        (setq trial-buffer (pop itasca-buffers))
+        (message "searching %s for FISH function %s: " trial-buffer function-name)
+        (setq result
+              (itasca--find-fish-function-at-point-in-buffer function-name trial-buffer))))
+    (if result
+        (progn
+          (switch-to-buffer (car result))
+          (goto-char (point-min))
+          (forward-line (- (cdr result) 1)))
+      (message "could not find FISH function %s" function-name))))
 
 ;;; tests
 
