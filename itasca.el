@@ -863,13 +863,13 @@ Itasca code."
     (message "Copied: %s to clipboard" s)))
 
 (defun itasca-python-copy-as-execfile ()
-  "Insert the string: 'python execfile('file-name')' to the kill
+  "Insert the string: 'execfile('file-name')' to the kill
 ring where file-name is the full path and filename of the current
 buffer. Useful when editing a datafile in emacs and loading it
 into an Itasca code."
   (interactive)
   (let* ((name (buffer-file-name))
-         (template "python execfile(r'%s')")
+         (template "execfile(r'%s')")
          (s (format template name)))
     (kill-new s)
     (message "Copied: %s to clipboard" s)))
