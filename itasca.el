@@ -71,7 +71,7 @@
 case_of caseof section end end_loop endloop end_command
 endcommand end_if endif end_case endcase end_section endsection
 case else array local global argument while null then
-while_stepping whilestepping exit))
+while_stepping whilestepping exit foreach))
 
 (defconst itasca-general-functions '(array_dim array_size
 buildstr char clock code_majorversion code_minorversion code_name
